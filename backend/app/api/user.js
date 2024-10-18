@@ -14,19 +14,17 @@ router.post("/", async (req, res) => {
 
     const user = await prisma.user.findUnique({ where: { userId } });
     if (!user) {
-      return res
-        .status(401)
-        .json({ error: "User error", message: "User not found" });
+      const newuser = await prisma.user.create({
+        data: {
+          userId,
+          username: "empty",
+        },
+      });
+
+      return res.status(200).json({ newuser });
     }
 
-    const newuser = await prisma.user.create({
-      data: {
-        userId,
-        username: "empty",
-      },
-    });
-
-    res.status(200).json({ newuser });
+    return res.status(200).json({ user });
   } catch (error) {
     res.status(500).json({
       error: "Internal Server Error",
