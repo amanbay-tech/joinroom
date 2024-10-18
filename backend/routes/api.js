@@ -1,8 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
-const { main } = require("../app/controllers/");
+const { user, course, lesson, client } = require("../app/api/");
 
-router.use("/main", main);
+router.use("/user", user);
+
+router.use("/expert/course", course);
+
+router.use("/expert/lesson", lesson);
+
+router.use("/client/course", client);
 
 module.exports = router;
