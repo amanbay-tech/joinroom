@@ -1,0 +1,59 @@
+services:
+  frontend:
+    container_name: joinroom-frontend
+    image: frontend
+    build:
+      context: ./frontend
+      dockerfile: DockerFile
+    ports:
+      - 3000:3000
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:4000
+      - SERVER_JWT=KSW2332sb5ciMest32asAqKggJi6A97x3S6HJtt64
+      - AUTH_SECRET=k9958a6bs7a30c02611d1265d8779e9a18168318e970fd54f90d0b478b0f9123sG
+      - REGISTER_DEFAULT_PASSWORD=joinroom!!
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      - joinroom_network
+
+  backend:
+    container_name: joinroom-backend
+    image: backend
+    build:
+      context: ./backend
+      dockerfile: DockerFile
+    ports:
+      - 4000:4000
+    environment:
+      - DATABASE_URL=postgresql://joinroom:ASW9A112AWKMSE@db:5432/db_joinroom
+      - API_JWT=USW2122DDMWSMKL32OOSRM6A97x3S6HJPP01
+      - HOST=localhost
+      - PORT=4000
+    networks:
+      - joinroom_network
+    depends_on:
+      - db
+
+  db:
+    container_name: joinroom-postgres
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_USER: joinroom
+      POSTGRES_PASSWORD: ASW9A112AWKMSE
+      POSTGRES_DB: db_joinroom
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - joinroom_network
+
+volumes:
+  postgres_data:
+
+networks:
+  joinroom_network:
+    driver: bridge
