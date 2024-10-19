@@ -211,7 +211,7 @@ router.post("/order", async (req, res) => {
       data: {
         courseId,
         userId,
-        status: "PENDING",
+        status: "ALLOWED",
         courseOwnerId: course.ownerId,
       },
     });

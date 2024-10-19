@@ -4,48 +4,53 @@ const bot = new Telegraf(process.env.CLIENT_BOT_TOKEN);
 const {
   createUser,
   getAllCourses,
+  getMyCourses,
+  getCourse,
+  subscribeCourse
+  
+  
 } = require('./joinroom-client');
+
 // Mock data for available courses
 const availableCourses = [
-  { id: '101', name: 'JavaScript Basics', description: 'Learn the fundamentals of JavaScript.' },
-  { id: '102', name: 'Node.js for Beginners', description: 'Introduction to Node.js and server-side JavaScript.' },
-  { id: '103', name: 'Advanced React', description: 'Deep dive into React concepts and patterns.' },
+  { id: '101', name: 'JavaScript негіздері', description: 'JavaScript тілінің негізгі қағидаларын үйреніңіз.' },
+  { id: '102', name: 'Node.js бастауыштарға', description: 'Node.js және сервер жағы JavaScript-ті түсіну.' },
+  { id: '103', name: 'React тереңдетілген курс', description: 'React кітапханасындағы концептілер мен үлгілерді зерттеңіз.' },
 ];
 
-// Mock data to store user's subscribed courses
-const userCourses = {};
 
-// Start command
-bot.start((ctx) => {
-  createUser(ctx.from.id);
-  return ctx.reply(
-    'Welcome! Please select an option:',
-    Markup.inlineKeyboard([
-      [Markup.button.callback('Subscribe to new Course', 'subscribe')],
-      [Markup.button.callback('List of my Courses', 'list_courses')]
-    ])
-  );
+
+bot.start(async (ctx) => {
+  try{
+    const userId = ctx.from.id;
+    const username = ctx.from.username; 
+  
+    await createUser(userId, username);;
+    return ctx.reply(
+      'Қош келдіңіз!🤗 Қызметті таңдаңыз:',
+      Markup.inlineKeyboard([
+        [Markup.button.callback('Жаңа курсқа жазылу➕', 'subscribe')],
+        [Markup.button.callback('Менің курстарым📚', 'list_courses')]
+      ])
+    );
+  }catch(error) {
+    ctx.reply('Sorry, there was an error fetching the data.');
+  }
+  
 });
 
-// Handle 'Subscribe to new Course'
 bot.action('subscribe', async (ctx) => {
   try {
-    const userId = ctx.from.id; // Extract the user ID from the context
-    const availableCourses = await getAllCourses(userId); // Fetch courses from the database
+    const userId = ctx.from.id;
+    const availableCourses = await getAllCourses(userId);
     
     if (!availableCourses || availableCourses.length === 0) {
       return ctx.reply('Қазіргі уақытта қолжетімді курстар жоқ.');
     }
-
-    // Create buttons for each course
     const buttons = availableCourses.map((course) => 
       Markup.button.callback(course.name, `view_course_${course.id}`)
     );
-
-    // Add a "Back" button at the end
     buttons.push(Markup.button.callback('Артқа🔙', 'back_to_menu'));
-
-    // Display the list of courses as an inline keyboard
     await ctx.editMessageText(
       'Курс таңдау үшін төмендегі тізімнен таңдаңыз:',
       Markup.inlineKeyboard(buttons, { columns: 1 })
@@ -57,93 +62,134 @@ bot.action('subscribe', async (ctx) => {
 });
 
 
-// Show course details and subscription options
-availableCourses.forEach((course) => {
-  bot.action(`view_course_${course.id}`, (ctx) => {
-    return ctx.reply(
-      `Course Name: ${course.name}\nDescription: ${course.description}`,
-      Markup.inlineKeyboard([
-        Markup.button.callback('Subscribe to Course', `subscribe_to_${course.id}`),
-        Markup.button.callback('Go Back to Courses List', 'subscribe')
-      ])
-    );
-  });
-
-  // Handle subscription to the course
-  bot.action(`subscribe_to_${course.id}`, (ctx) => {
+bot.action('list_courses', async (ctx) => {
+  try {
     const userId = ctx.from.id;
-    userCourses[userId] = userCourses[userId] || [];
-    if (!userCourses[userId].some((c) => c.id === course.id)) {
-      userCourses[userId].push(course);
+    const courses = await getMyCourses(userId);
+
+    if (!courses || courses.length === 0) {
+      return ctx.reply(
+        'Сіз ешқандай курсқа әлі жазылған жоқсыз.',
+        Markup.inlineKeyboard([
+          Markup.button.callback('Бас менюге оралу📲', 'back_to_menu')
+        ])
+      );
+    }
+    const buttons = courses.map((course) => 
+      Markup.button.callback(course.name, `my_course_${course.id}`)
+    );
+    buttons.push(Markup.button.callback('Артқа🔙', 'back_to_menu'));
+    await ctx.editMessageText(
+      'Сіздің жазылған курстарыңыз:',
+      Markup.inlineKeyboard(buttons, { columns: 1 })
+    );
+  } catch (error) {
+    console.error('Error fetching user courses:', error);
+    await ctx.reply('Курстарды алу кезінде қате пайда болды. Қайта көріңіз.');
+  }
+});
+
+
+bot.action(/my_course_(\d+)/, async (ctx) => {
+  try {
+    const courseId = parseInt(ctx.match[1], 10); 
+    const userId = ctx.from.id;
+
+    const course = await getCourse(userId, courseId);
+
+    if (!course) {
+      return ctx.reply('Курс табылмады.');
     }
     return ctx.reply(
-      `You have subscribed to: ${course.name}`,
+      `Курс атауы:👉 ${course.name}\nСипаттамасы:👉 ${course.description}`,
       Markup.inlineKeyboard([
-        Markup.button.callback('Back to Menu', 'back_to_menu'),
-        Markup.button.callback('Back to Courses List', 'subscribe')
+        Markup.button.callback('Менің курстарыма оралу📚', 'list_courses'),
+        Markup.button.callback('Бас менюге оралу📲', 'back_to_menu')
       ])
     );
-  });
-});
-
-// Handle 'List of my Courses'
-bot.action('list_courses', (ctx) => {
-  const userId = ctx.from.id;
-  const courses = userCourses[userId] || [];
-
-  if (courses.length === 0) {
-    return ctx.reply(
-      'You have not subscribed to any courses yet.',
-      Markup.inlineKeyboard([
-        Markup.button.callback('Back to Menu', 'back_to_menu')
-      ])
-    );
+  } catch (error) {
+    console.error('Error fetching course details:', error);
+    await ctx.reply('Курсты алу кезінде қате пайда болды. Қайта көріңіз.');
   }
-
-  const buttons = courses.map((course) => 
-    Markup.button.callback(course.name, `my_course_${course.id}`)
-  );
-  buttons.push(Markup.button.callback('Back', 'back_to_menu'));
-
-  return ctx.editMessageText(
-    'Here are your subscribed courses:',
-    Markup.inlineKeyboard(buttons, { columns: 1 })
-  );
 });
+bot.action(/view_course_(\d+)/, async (ctx) => {
+  try {
+    const courseId = parseInt(ctx.match[1], 10);
+    const userId = ctx.from.id;
 
-// Handle course details from the user's list
-availableCourses.forEach((course) => {
-  bot.action(`my_course_${course.id}`, (ctx) => {
+    // Fetch course details using the helper function
+    const course = await getCourse(userId, courseId);
+
+    // Check if the course was found
+    if (!course) {
+      return ctx.reply('Курс табылмады.');
+    }
+
+    // Display course details with subscription option
     return ctx.reply(
-      `Course Name: ${course.name}\nDescription: ${course.description}`,
+      `Курс атауы:👉 ${course.name}\nСипаттамасы:👉 ${course.description}`,
       Markup.inlineKeyboard([
-        Markup.button.callback('Back to My Courses', 'list_courses'),
-        Markup.button.callback('Back to Menu', 'back_to_menu')
+        Markup.button.callback('Курсқа жазылу📝', `subscribe_to_${course.id}`),
+        Markup.button.callback('Курстар тізіміне оралу🔙', 'subscribe')
       ])
     );
-  });
+  } catch (error) {
+    console.error('Error fetching course details:', error);
+    await ctx.reply('Курсты алу кезінде қате пайда болды. Қайта көріңіз.');
+  }
 });
 
-// Handle 'Back' to the main menu
+// Handle course subscription dynamically
+bot.action(/subscribe_to_(\d+)/, async (ctx) => {
+  try {
+    const courseId = parseInt(ctx.match[1], 10); // Extract courseId from action data
+    const userId = ctx.from.id;
+
+    // Fetch course details using the helper function to verify it exists
+    const course = await getCourse(userId, courseId);
+    if (!course) {
+      return ctx.reply('Курс табылмады.');
+    }
+
+    // Call the backend API to create a subscription
+    await subscribeCourse(userId, courseId);
+
+    // Respond with a confirmation message including the course name
+    return ctx.reply(
+      `${course.name} - Жазылуға сұраныс жіберілді ✅`,
+      Markup.inlineKeyboard([
+        Markup.button.callback('Бас менюге оралу📲', 'back_to_menu'),
+        Markup.button.callback('Курстар тізіміне оралу🔙', 'subscribe')
+      ])
+    );
+  } catch (error) {
+    console.error('Error subscribing to course:', error);
+    await ctx.reply('Курсқа жазылу кезінде қате пайда болды. Қайта көріңіз.');
+  }
+});
+
+
+
+// 'Бас менюге оралу' әрекетін өңдеу
 bot.action('back_to_menu', (ctx) => {
   return ctx.reply(
-    'Welcome back! Please select an option:',
+    'Қайта оралдыңыз!🤗 Қызметті таңдаңыз:',
     Markup.inlineKeyboard([
-      [Markup.button.callback('Subscribe to new Course', 'subscribe')],
-      [Markup.button.callback('List of my Courses', 'list_courses')]
+      [Markup.button.callback('Жаңа курсқа жазылу➕', 'subscribe')],
+      [Markup.button.callback('Менің курстарым📚', 'list_courses')]
     ])
   );
 });
 
-// Start polling
+// Ботты іске қосу
 bot.launch()
   .then(() => {
-    console.log('Bot is running...');
+    console.log('Бот іске қосылды...');
   })
   .catch((error) => {
-    console.error('Error launching bot:', error);
+    console.error('Ботты іске қосу кезінде қате пайда болды:', error);
   });
 
-// Graceful stop on SIGINT or SIGTERM
+// SIGINT немесе SIGTERM болған жағдайда ботты тоқтату
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
