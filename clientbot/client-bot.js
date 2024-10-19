@@ -6,7 +6,9 @@ const {
   getAllCourses,
   getMyCourses,
   getCourse,
-  subscribeCourse
+  subscribeCourse,
+  getCourseLessons,
+  getLesson
   
   
 } = require('./joinroom-client');
@@ -103,6 +105,7 @@ bot.action(/my_course_(\d+)/, async (ctx) => {
     return ctx.reply(
       `Курс атауы:👉 ${course.name}\nСипаттамасы:👉 ${course.description}`,
       Markup.inlineKeyboard([
+        Markup.button.callback('Сабақтарды көру📖', `list_lessons_${courseId}`),
         Markup.button.callback('Менің курстарыма оралу📚', 'list_courses'),
         Markup.button.callback('Бас менюге оралу📲', 'back_to_menu')
       ])
@@ -167,8 +170,55 @@ bot.action(/subscribe_to_(\d+)/, async (ctx) => {
     await ctx.reply('Курсқа жазылу кезінде қате пайда болды. Қайта көріңіз.');
   }
 });
+bot.action(/list_lessons_(\d+)/, async (ctx) => {
+  try {
+    const courseId = parseInt(ctx.match[1], 10); 
+    const userId = ctx.from.id;
+    const lessons = await getCourseLessons(userId, courseId);
 
+    if (!lessons || lessons.length === 0) {
+      return ctx.reply('Бұл курста сабақтар жоқ.');
+    }
+    const buttons = lessons.map((lesson) => 
+      Markup.button.callback(lesson.name, `view_lesson_${lesson.id}_${courseId}`)
+    );
+    buttons.push(Markup.button.callback('Курстың мәліметтеріне оралу🔙', `my_course_${courseId}`));
+    await ctx.reply(
+      'Сабақтар тізімін таңдау үшін төмендегі тізімнен таңдаңыз:',
+      Markup.inlineKeyboard(buttons, { columns: 1 })
+    );
+  } catch (error) {
+    console.error('Error fetching lessons:', error);
+    await ctx.reply('Сабақтарды алу кезінде қате пайда болды. Қайта көріңіз.');
+  }
+});
+bot.action(/view_lesson_(\d+)_(\d+)/, async (ctx) => {
+  try {
+    const lessonId = parseInt(ctx.match[1], 10);
+    const couseId = parseInt(ctx.match[2], 10); 
+    const userId = ctx.from.id;
 
+    // Fetch the lesson details using the helper function
+    const lesson = await getLesson(userId, couseId, lessonId);
+
+    // Check if the lesson was found
+    if (!lesson) {
+      return ctx.reply('Сабақ табылмады.');
+    }
+
+    // Display the lesson details to the user
+    await ctx.reply(
+      `Сабақтың аты:👉 ${lesson.name}\nСипаттамасы:👉 ${lesson.description}\nСілтеме: ${lesson.url}`,
+      Markup.inlineKeyboard([
+        [Markup.button.callback('Курстың мәліметтеріне оралу🔙', `my_course_${lesson.courseId}`)],
+        [Markup.button.callback('Бас меню📲', 'back_to_menu')],
+      ])
+    );
+  } catch (error) {
+    console.error('Error fetching lesson details:', error);
+    await ctx.reply('Сабақты алу кезінде қате пайда болды. Қайта көріңіз.');
+  }
+});
 
 // 'Бас менюге оралу' әрекетін өңдеу
 bot.action('back_to_menu', (ctx) => {

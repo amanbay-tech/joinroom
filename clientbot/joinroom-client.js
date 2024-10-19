@@ -116,13 +116,54 @@ async function subscribeCourse(userId, courseId) {
     throw new Error('Failed to subscribe user to the course.');
   }
 }
+async function getCourseLessons(userId,courseId) {
+  try {
+    const response = await axios.post(
+      `${url}/expert/lesson`,
+      { 
+        userId: userId,
+        courseId:courseId
+       },
+      {
+        params: {
+          jwt: jwt,
+        },
+      }
+    );
+    return response.data.lesson; // Adjust if the array is nested deeper
+  } catch (error) {
+    console.error('Error getting courses for expert user:', error);
+    throw new Error('Failed to get expert courses.');
+  }
+}
+async function getLesson(userId, courseId, lessonId) {
+  try {
+    const response = await axios.post(`${url}/expert/lesson/get`, {
+        userId: userId,
+        courseId: courseId,
+        lessonId: lessonId,
+    },
+    {
+        params: {
+          jwt: jwt, 
+        },
+      }
+    );
+    console.log('Fetching lesson with:', { userId, courseId, lessonId });
 
-
+    return response.data.lesson; 
+  } catch (error) {
+    console.error('Error getting lesson info:', error);
+    throw new Error('Failed to get lesson.');
+  }
+}
 module.exports = {
 createUser,
 getExpertCourses,
 getCourse,
 getAllCourses,
 getMyCourses,
-subscribeCourse
+subscribeCourse,
+getCourseLessons,
+getLesson,
 };
