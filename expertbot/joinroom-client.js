@@ -3,18 +3,24 @@ const axios = require('axios');
 const url =process.env.BACKEND_URL;
 const jwt=process.env.API_JWT;
 // Function to make a GET request
-async function createUser(userId) {
+async function createUser(userId, username) {
   try {
-    console.log("jwt:" + jwt);
-    const response = await axios.post(`${url}/user`, {
-        userId: userId
-    },
-    {
-        params: {
-          jwt: jwt, 
-        },
-      }
-    );
+    // Prepare the request payload
+    const payload = {
+      userId: userId,
+    };
+
+    // Include the username if it exists
+    if (username) {
+      payload.username = username;
+    }
+
+    // Make the API request to create the user
+    const response = await axios.post(`${url}/user`, payload, {
+      params: {
+        jwt: jwt, 
+      },
+    });
 
     return response.data; // Return the response data directly
   } catch (error) {
@@ -22,6 +28,7 @@ async function createUser(userId) {
     throw new Error('Failed to create a user.');
   }
 }
+
 async function getExpertCourses(userId) {
   try {
     const response = await axios.post(
@@ -73,19 +80,22 @@ async function getCourse(userId, courseId) {
     );
     return response.data.course; 
   } catch (error) {
-    console.error('Error creating courses user:', error);
-    throw new Error('Failed to create courses.');
+    console.error('Error getting courses info:', error);
+    throw new Error('Failed to get course.');
   }
 }
 async function addLesson(userId, courseId, lessonName, lessonDescription, lessonUrl) {
   try {
     // Step 1: Fetch existing lessons for the course to determine the last order number
-    const lessonsResponse = await axios.post(`${url}/expert/lesson/`, {
+    const lessonsResponse = await axios.post(`${url}/expert/lesson`, {
+      userId:userId,
+      courseId:courseId
+    },{
       params: {
-        courseId: courseId,
         jwt: jwt, 
       },
-    });
+    }
+  );
 
     // Step 2: Get the lessons data and determine the last order number
     const lessons = lessonsResponse.data || [];
@@ -134,7 +144,47 @@ async function getAllCourses(userId) {
     throw new Error('Failed to get expert courses.');
   }
 }
+async function getCourseLessons(userId,courseId) {
+  try {
+    const response = await axios.post(
+      `${url}/expert/lesson`,
+      { 
+        userId: userId,
+        courseId:courseId
+       },
+      {
+        params: {
+          jwt: jwt,
+        },
+      }
+    );
+    return response.data.lesson; // Adjust if the array is nested deeper
+  } catch (error) {
+    console.error('Error getting courses for expert user:', error);
+    throw new Error('Failed to get expert courses.');
+  }
+}
+async function getLesson(userId, courseId, lessonId) {
+  try {
+    const response = await axios.post(`${url}/expert/lesson/get`, {
+        userId: userId,
+        courseId: courseId,
+        lessonId: lessonId,
+    },
+    {
+        params: {
+          jwt: jwt, 
+        },
+      }
+    );
+    console.log('Fetching lesson with:', { userId, courseId, lessonId });
 
+    return response.data.lesson; 
+  } catch (error) {
+    console.error('Error getting lesson info:', error);
+    throw new Error('Failed to get lesson.');
+  }
+}
 
 module.exports = {
 createUser,
@@ -142,5 +192,7 @@ getExpertCourses,
 createCourse,
 getCourse,
 addLesson,
-getAllCourses
+getAllCourses,
+getCourseLessons,
+getLesson
 };

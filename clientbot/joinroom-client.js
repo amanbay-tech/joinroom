@@ -40,25 +40,6 @@ async function getExpertCourses(userId) {
   }
 }
 
-async function createCourse(userId, courseName, courseDescription) {
-  try {
-    const response = await axios.post(`${url}/expert/course/create`, {
-        userId: userId,
-        name: courseName,
-        description: courseDescription
-    },
-    {
-        params: {
-          jwt: jwt, 
-        },
-      }
-    );
-    return response.data; 
-  } catch (error) {
-    console.error('Error creating courses user:', error);
-    throw new Error('Failed to create courses.');
-  }
-}
 async function getCourse(userId, courseId) {
   try {
     const response = await axios.post(`${url}/expert/course/get`, {
@@ -75,45 +56,6 @@ async function getCourse(userId, courseId) {
   } catch (error) {
     console.error('Error creating courses user:', error);
     throw new Error('Failed to create courses.');
-  }
-}
-async function addLesson(userId, courseId, lessonName, lessonDescription, lessonUrl) {
-  try {
-    // Step 1: Fetch existing lessons for the course to determine the last order number
-    const lessonsResponse = await axios.post(`${url}/expert/lesson/`, {
-      params: {
-        courseId: courseId,
-        jwt: jwt, 
-      },
-    });
-
-    // Step 2: Get the lessons data and determine the last order number
-    const lessons = lessonsResponse.data || [];
-    const lastOrderNumber = lessons.length > 0 
-      ? Math.max(...lessons.map(lesson => lesson.orderNumber)) 
-      : 0;
-
-    // Step 3: Set the new order number as lastOrderNumber + 1
-    const newOrderNumber = lastOrderNumber + 1;
-
-    // Step 4: Create the new lesson with the determined order number
-    const response = await axios.post(`${url}/expert/lesson/create`, {
-      userId:userId,
-      courseId:courseId,
-      name: lessonName,
-      description: lessonDescription,
-      url: lessonUrl,
-      orderNumber: newOrderNumber,
-    }, {
-      params: {
-        jwt: jwt, 
-      },
-    });
-
-    return response.data; 
-  } catch (error) {
-    console.error('Error creating lesson:', error);
-    throw new Error('Failed to create lesson.');
   }
 }
 
@@ -135,12 +77,52 @@ async function getAllCourses(userId) {
   }
 }
 
+async function getMyCourses(userId) {
+  try {
+    const response = await axios.post(
+      `${url}/client/course/list`,
+      { userId: userId },
+      {
+        params: {
+          jwt: jwt,
+        },
+      }
+    );
+    return response.data.course; // Adjust if the array is nested deeper
+  } catch (error) {
+    console.error('Error getting user courses', error);
+    throw new Error('Failed to get user courses.');
+  }
+}
+// Function to subscribe a user to a course via the backend API
+async function subscribeCourse(userId, courseId) {
+  try {
+    const response = await axios.post(
+      `${url}/client/course/order`, // Adjusted the URL to match the subscription endpoint
+      {
+        userId: userId,
+        courseId: courseId,
+      },
+      {
+        params: {
+          jwt: jwt, // Include the JWT token for authentication
+        },
+      }
+    );
+
+    return response.data; // Return the response data directly for further use
+  } catch (error) {
+    console.error('Error subscribing user to course:', error);
+    throw new Error('Failed to subscribe user to the course.');
+  }
+}
+
 
 module.exports = {
 createUser,
 getExpertCourses,
-createCourse,
 getCourse,
-addLesson,
-getAllCourses
+getAllCourses,
+getMyCourses,
+subscribeCourse
 };
