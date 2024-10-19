@@ -1,0 +1,31 @@
+
+
+### Prisma ###
+
+npx prisma migrate dev --name init
+
+npx prisma migrate reset
+
+npx prisma db seed
+
+docker exec -it backend npx prisma migrate dev --name init
+
+docker exec -it backend npx prisma db seed
+
+
+### Docker ###
+
+docker compose logs backend
+
+docker builder prune
+
+docker system prune
+
+docker system prune -a
+
+
+
+
+### Linux ###
+
+df - storage koruge

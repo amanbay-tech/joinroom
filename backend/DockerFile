@@ -1,0 +1,21 @@
+FROM node:18-alpine AS base
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+COPY prisma ./prisma
+
+EXPOSE 4000
+
+RUN npx prisma generate
+
+#RUN npx prisma migrate deploy
+
+ENV TZ Asia/Aqtau
+
+CMD ["node", "app.js"]
