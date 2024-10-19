@@ -14,9 +14,9 @@ const Back = () => (
     <path
       d="M25.3334 15.3333L18.6667 22L25.3334 28.6667"
       stroke="#323232"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

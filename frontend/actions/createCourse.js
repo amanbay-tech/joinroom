@@ -8,17 +8,16 @@ export async function createCourse(data) {
     const req = await ServerRequest({
       route: "api",
       path: "expert/course/create",
-      body: { data },
+      body: data,
     });
 
     if (req.error) {
-      return error(req.message);
+      return { error: req.message };
     }
 
-    revalidatePath("course/newcourse");
+    //revalidatePath("course/newcourse");
     return { req };
   } catch (e) {
-    console.error(e);
-    return error(e.message);
+    return { error: "error" };
   }
 }
