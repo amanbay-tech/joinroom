@@ -7,6 +7,9 @@ export default async function ServerRequest({ route, path, body }) {
     const server = process.env.NEXT_PUBLIC_API_URL;
     const jwt = process.env.SERVER_JWT;
 
+    console.log(server);
+    console.log(jwt);
+
     let bodydata = JSON.stringify({
       jwt,
       ...body,
