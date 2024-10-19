@@ -48,9 +48,9 @@ export default function Home() {
         это инновационная платформа совместной работы, созданная для
         эффективного взаимодействия команд и упрощения удаленной коммуникации.
       </p>
-      <Link href="/course/create">
+      <Link href="/course/newcourse">
         <button className="px-7 text-xl mx-auto py-4 flex justify-center mt-4 bg-white border rounded-lg">
-          Создать курс
+          Курс қосу
         </button>
       </Link>
     </div>

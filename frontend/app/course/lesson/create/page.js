@@ -185,7 +185,7 @@ export default function Edit() {
             </svg>
           </div>
         </div>
-        <Link href="/course/lessons">
+        <Link href="/course/lesson">
           <button className="px-40 mt-10 text-xl mx-auto border-none py-4 flex justify-center  bg-[#1C8ED7] border rounded-full">
             <p className="text-white">Қосу</p>
           </button>
