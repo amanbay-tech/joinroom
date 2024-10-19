@@ -1,6 +1,10 @@
 require('dotenv').config();
 const { Telegraf, Markup } = require('telegraf');
 const bot = new Telegraf(process.env.CLIENT_BOT_TOKEN);
+const {
+  createUser,
+  getAllCourses,
+} = require('./joinroom-client');
 // Mock data for available courses
 const availableCourses = [
   { id: '101', name: 'JavaScript Basics', description: 'Learn the fundamentals of JavaScript.' },
@@ -13,6 +17,7 @@ const userCourses = {};
 
 // Start command
 bot.start((ctx) => {
+  createUser(ctx.from.id);
   return ctx.reply(
     'Welcome! Please select an option:',
     Markup.inlineKeyboard([
@@ -23,17 +28,34 @@ bot.start((ctx) => {
 });
 
 // Handle 'Subscribe to new Course'
-bot.action('subscribe', (ctx) => {
-  const buttons = availableCourses.map((course) => 
-    Markup.button.callback(course.name, `view_course_${course.id}`)
-  );
-  buttons.push(Markup.button.callback('Back', 'back_to_menu'));
+bot.action('subscribe', async (ctx) => {
+  try {
+    const userId = ctx.from.id; // Extract the user ID from the context
+    const availableCourses = await getAllCourses(userId); // Fetch courses from the database
+    
+    if (!availableCourses || availableCourses.length === 0) {
+      return ctx.reply('Қазіргі уақытта қолжетімді курстар жоқ.');
+    }
 
-  return ctx.editMessageText(
-    'Select a course to view details:',
-    Markup.inlineKeyboard(buttons, { columns: 1 })
-  );
+    // Create buttons for each course
+    const buttons = availableCourses.map((course) => 
+      Markup.button.callback(course.name, `view_course_${course.id}`)
+    );
+
+    // Add a "Back" button at the end
+    buttons.push(Markup.button.callback('Артқа🔙', 'back_to_menu'));
+
+    // Display the list of courses as an inline keyboard
+    await ctx.editMessageText(
+      'Курс таңдау үшін төмендегі тізімнен таңдаңыз:',
+      Markup.inlineKeyboard(buttons, { columns: 1 })
+    );
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    await ctx.reply('Курстарды алу кезінде қате пайда болды. Қайта көріңіз.');
+  }
 });
+
 
 // Show course details and subscription options
 availableCourses.forEach((course) => {

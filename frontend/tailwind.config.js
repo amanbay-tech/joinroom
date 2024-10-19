@@ -12,6 +12,9 @@ module.exports = {
         foreground: "var(--foreground)",
       },
     },
+    screen: {
+      phone: "max-[390px]",
+    },
   },
   plugins: [],
 };
