@@ -56,8 +56,9 @@ router.post("/", async (req, res) => {
 router.post("/create", async (req, res) => {
   try {
     const userId = parseInt(req.body.userId, 10);
-    const courseId = parseInt(req.body.userId, 10);
-    const { name, description, url, orderNumber } = req.body;
+    const courseId = parseInt(req.body.courseId, 10);
+    const orderNumber = parseInt(req.body.orderNumber, 10);
+    const { name, description, url } = req.body;
 
     if (!userId) {
       return res
