@@ -1,9 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export default function Edit() {
+export default function Modal({ isOpen, onClose }) {
+  if (!isOpen) return null; // Если модальное окно закрыто, ничего не рендерим
+
   return (
-    <div className="bg-[#000000] bg-opacity-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className=" mx-auto max-w-[390px] max-h-full h-screen">
         <div className="flex pt-5 sm:flex phone:flex-col mx-auto">
           <div className="mx-auto">
@@ -120,7 +122,7 @@ export default function Edit() {
           </svg>
           <p className="text-white ml-2 mt-[4px]">Ақпаратты толықтырыңыз</p>
         </div>
-        <div className="ml-5 mt-2 max-w-[345px]">
+        <div className="ml-3 mt-2 max-w-[345px]">
           <div className="bg-[#F5F5F5] flex phone:flex-col mb-5 max-w-[345px] mx-auto focus:outline-none rounded-full py-4">
             <input
               type="text"
@@ -185,11 +187,17 @@ export default function Edit() {
             </svg>
           </div>
         </div>
-        <Link href="/course/lesson">
-          <button className="px-40 mt-10 text-xl mx-auto border-none py-4 flex justify-center  bg-[#1C8ED7] border rounded-full">
+        <div className="flex phone:flex-row mx-autp">
+          <button className="px-10 mt-10 text-xl  border-none py-4 bg-[#1C8ED7] rounded-full">
             <p className="text-white">Қосу</p>
           </button>
-        </Link>
+          <button
+            onClick={onClose}
+            className="px-10 mt-10 text-xl border-none py-4 bg-red-500 rounded-full"
+          >
+            <p className="text-white">Жабу</p>
+          </button>
+        </div>
       </div>
     </div>
   );

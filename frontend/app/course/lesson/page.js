@@ -1,6 +1,14 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import Modal from "../../../components/modal";
 export default function Lessons() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   return (
     <div className="">
       <div className=" mx-auto max-w-[390px] max-h-full h-screen">
@@ -19,9 +27,9 @@ export default function Lessons() {
                 <path
                   d="M25.3334 15.3333L18.6667 22L25.3334 28.6667"
                   stroke="#323232"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
             </Link>
@@ -40,23 +48,23 @@ export default function Lessons() {
             <path
               d="M27.5023 22.003C27.5023 22.2781 27.7274 22.5032 28.0025 22.5002C28.2776 22.5002 28.5027 22.2751 28.5027 22C28.5027 21.7249 28.2776 21.4998 28.0025 21.4998C27.7274 21.4998 27.5023 21.7249 27.5023 22.003"
               stroke="#323232"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M21.4998 22.003C21.4998 22.2781 21.7248 22.5032 22 22.5002C22.2751 22.5002 22.5002 22.2751 22.5002 22C22.5002 21.7249 22.2751 21.4998 22 21.4998C21.7248 21.4998 21.4998 21.7249 21.4998 22.003"
               stroke="#323232"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M15.4973 22.003C15.4973 22.2781 15.7224 22.5032 15.9975 22.5002C16.2726 22.5002 16.4977 22.2751 16.4977 22C16.4977 21.7249 16.2726 21.4998 15.9975 21.4998C15.7224 21.4998 15.4973 21.7249 15.4973 22.003"
               stroke="#323232"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         </div>
@@ -93,9 +101,9 @@ export default function Lessons() {
               <path
                 d="M12 6.04201C10.3516 4.56337 8.2144 3.74695 6 3.75001C4.948 3.75001 3.938 3.93001 3 4.26201V18.512C3.96362 18.172 4.97816 17.9989 6 18C8.305 18 10.408 18.867 12 20.292M12 6.04201C13.6483 4.56328 15.7856 3.74686 18 3.75001C19.052 3.75001 20.062 3.93001 21 4.26201V18.512C20.0364 18.172 19.0218 17.9989 18 18C15.7856 17.997 13.6484 18.8134 12 20.292M12 6.04201V20.292"
                 stroke="black"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
             <span className="font-bold ml-3 mr-52">Сабақ 1.</span>
@@ -110,23 +118,23 @@ export default function Lessons() {
               <path
                 d="M15.4881 10H4.77869"
                 stroke="#323232"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M11.6633 14.1667L15.4881 10"
                 stroke="#323232"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M11.6633 5.83337L15.4881 10"
                 stroke="#323232"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           </a>
@@ -142,9 +150,9 @@ export default function Lessons() {
               <path
                 d="M12 6.04201C10.3516 4.56337 8.2144 3.74695 6 3.75001C4.948 3.75001 3.938 3.93001 3 4.26201V18.512C3.96362 18.172 4.97816 17.9989 6 18C8.305 18 10.408 18.867 12 20.292M12 6.04201C13.6483 4.56328 15.7856 3.74686 18 3.75001C19.052 3.75001 20.062 3.93001 21 4.26201V18.512C20.0364 18.172 19.0218 17.9989 18 18C15.7856 17.997 13.6484 18.8134 12 20.292M12 6.04201V20.292"
                 stroke="black"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
             <span className="font-bold ml-3 mr-52">Сабақ 2.</span>
@@ -159,23 +167,23 @@ export default function Lessons() {
               <path
                 d="M15.4881 10H4.77869"
                 stroke="#323232"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M11.6633 14.1667L15.4881 10"
                 stroke="#323232"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M11.6633 5.83337L15.4881 10"
                 stroke="#323232"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           </a>
@@ -191,9 +199,9 @@ export default function Lessons() {
               <path
                 d="M12 6.04201C10.3516 4.56337 8.2144 3.74695 6 3.75001C4.948 3.75001 3.938 3.93001 3 4.26201V18.512C3.96362 18.172 4.97816 17.9989 6 18C8.305 18 10.408 18.867 12 20.292M12 6.04201C13.6483 4.56328 15.7856 3.74686 18 3.75001C19.052 3.75001 20.062 3.93001 21 4.26201V18.512C20.0364 18.172 19.0218 17.9989 18 18C15.7856 17.997 13.6484 18.8134 12 20.292M12 6.04201V20.292"
                 stroke="black"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
             <span className="font-bold ml-3 mr-52">Сабақ 3.</span>
@@ -208,23 +216,23 @@ export default function Lessons() {
               <path
                 d="M15.4881 10H4.77869"
                 stroke="#323232"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M11.6633 14.1667L15.4881 10"
                 stroke="#323232"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M11.6633 5.83337L15.4881 10"
                 stroke="#323232"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           </a>
@@ -240,9 +248,9 @@ export default function Lessons() {
               <path
                 d="M12 6.04201C10.3516 4.56337 8.2144 3.74695 6 3.75001C4.948 3.75001 3.938 3.93001 3 4.26201V18.512C3.96362 18.172 4.97816 17.9989 6 18C8.305 18 10.408 18.867 12 20.292M12 6.04201C13.6483 4.56328 15.7856 3.74686 18 3.75001C19.052 3.75001 20.062 3.93001 21 4.26201V18.512C20.0364 18.172 19.0218 17.9989 18 18C15.7856 17.997 13.6484 18.8134 12 20.292M12 6.04201V20.292"
                 stroke="black"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
             <span className="font-bold ml-3 mr-52">Сабақ 4.</span>
@@ -257,32 +265,35 @@ export default function Lessons() {
               <path
                 d="M15.4881 10H4.77869"
                 stroke="#323232"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M11.6633 14.1667L15.4881 10"
                 stroke="#323232"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M11.6633 5.83337L15.4881 10"
                 stroke="#323232"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           </a>
         </div>
-        <Link href="/course/lesson">
-          <button className="px-40 mt-10 text-xl mx-auto border-none py-4 flex justify-center  bg-[#1C8ED7] border rounded-full">
-            <p className="text-white">Қосу</p>
-          </button>
-        </Link>
+
+        <button
+          onClick={openModal}
+          className="px-40 mt-10 text-xl mx-auto border-none py-4 flex justify-center  bg-[#1C8ED7] border rounded-full"
+        >
+          <p className="text-white">Қосу</p>
+        </button>
+        <Modal isOpen={isModalOpen} onClose={closeModal} />
       </div>
     </div>
   );
