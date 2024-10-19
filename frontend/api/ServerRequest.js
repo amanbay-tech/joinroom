@@ -19,12 +19,11 @@ export default async function ServerRequest({ route, path, body }) {
           "Content-Type": "application/json",
         },
         body: bodydata,
-        cache: "no-store",
       });
 
       return await res.json();
     } catch (error) {
-      return NextResponse.json({ error: "server", message: error.message });
+      return NextResponse.json({ error: "catch" });
     }
   } catch (error) {
     console.log(error.message);
