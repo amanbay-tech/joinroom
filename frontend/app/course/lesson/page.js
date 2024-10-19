@@ -1,6 +1,14 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import Modal from "../../../components/modal";
 export default function Lessons() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   return (
     <div className="">
       <div className=" mx-auto max-w-[390px] max-h-full h-screen">
@@ -278,11 +286,14 @@ export default function Lessons() {
             </svg>
           </a>
         </div>
-        <Link href="/course/lesson">
-          <button className="px-40 mt-10 text-xl mx-auto border-none py-4 flex justify-center  bg-[#1C8ED7] border rounded-full">
-            <p className="text-white">Қосу</p>
-          </button>
-        </Link>
+
+        <button
+          onClick={openModal}
+          className="px-40 mt-10 text-xl mx-auto border-none py-4 flex justify-center  bg-[#1C8ED7] border rounded-full"
+        >
+          <p className="text-white">Қосу</p>
+        </button>
+        <Modal isOpen={isModalOpen} onClose={closeModal} />
       </div>
     </div>
   );
