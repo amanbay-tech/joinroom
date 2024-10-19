@@ -9,9 +9,7 @@ services:
       - 3000:3000
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:4000
-      - SERVER_JWT=KSW2332sb5ciMest32asAqKggJi6A97x3S6HJtt64
-      - AUTH_SECRET=k9958a6bs7a30c02611d1265d8779e9a18168318e970fd54f90d0b478b0f9123sG
-      - REGISTER_DEFAULT_PASSWORD=joinroom!!
+      - SERVER_JWT=USW2122DDMWSMKL32OOSRM6A97x3S6HJPP01
     restart: always
     depends_on:
       - backend
@@ -35,6 +33,28 @@ services:
       - joinroom_network
     depends_on:
       - db
+
+  clientbot:
+    container_name: joinroom-clientbot
+    image: clientbot
+    build:
+      context: ./clientbot
+      dockerfile: DockerFile
+    networks:
+      - joinroom_network
+    depends_on:
+      - backend
+
+  expertbot:
+    container_name: joinroom-expertbot
+    image: expertbot
+    build:
+      context: ./expertbot
+      dockerfile: DockerFile
+    networks:
+      - joinroom_network
+    depends_on:
+      - backend
 
   db:
     container_name: joinroom-postgres
