@@ -2,6 +2,16 @@
 
 Join Room is a Learning Management System (LMS) platform that includes a backend service, frontend service, an expert bot, and a client bot. Each component runs in a Docker container, making it easy to deploy and manage.
 
+Client Bot: Helps users subscribe to courses and access lessons.
+Expert Bot: Empowers educators to add and manage their courses efficiently.
+
+
+# Access the bots directly:
+
+https://t.me/JoinRoomExpertBot
+https://t.me/JoinRoomBot
+
+
 ## Prerequisites
 
 - Docker
