@@ -1,14 +1,14 @@
 // pages/index.js
+"use client"
 import React, { useRef, useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Icon from '../components/icon'; // Adjust the path if necessary
 import Head from 'next/head';
-import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const HomePage = () => {
   const [buttonWidth, setButtonWidth] = useState('auto');
   const joinRoomRef = useRef(null);
-  const router = useRouter();
 
   useEffect(() => {
     // Adjust the width of the button to match the width of the "Join room" text
@@ -16,10 +16,6 @@ const HomePage = () => {
       setButtonWidth(`${joinRoomRef.current.offsetWidth + 50}px`); // Increased width
     }
   }, []);
-
-  const handleAddCourse = () => {
-    router.push('/create_course'); // Redirect to the CreateCourse page
-  };
 
   return (
     <>
@@ -40,13 +36,14 @@ const HomePage = () => {
         <div className="description roboto-light">
           это инновационная платформа совместной работы, созданная для эффективного взаимодействия команд и упрощения удаленной коммуникации
         </div>
-        <button
-          className="add-course-btn"
-          style={{ width: buttonWidth }}
-          onClick={handleAddCourse}
-        >
-          Курс қосу
-        </button>
+        <Link href="/course/create" passHref>
+          <button
+            className="add-course-btn"
+            style={{ width: buttonWidth }}
+          >
+            Курс қосу
+          </button>
+        </Link>
       </div>
       <style jsx>{`
         .content-wrapper {
