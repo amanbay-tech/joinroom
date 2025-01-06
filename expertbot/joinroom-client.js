@@ -24,7 +24,7 @@ async function createUser(userId, username) {
 
     return response.data; // Return the response data directly
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error('Error creating user:', error.message);
     throw new Error('Failed to create a user.');
   }
 }
@@ -42,7 +42,7 @@ async function getExpertCourses(userId) {
     );
     return response.data.course; // Adjust if the array is nested deeper
   } catch (error) {
-    console.error('Error getting courses for expert user:', error);
+    console.error('Error getting courses for expert user:', error.message);
     throw new Error('Failed to get expert courses.');
   }
 }
@@ -62,7 +62,7 @@ async function createCourse(userId, courseName, courseDescription) {
     );
     return response.data; 
   } catch (error) {
-    console.error('Error creating courses user:', error);
+    console.error('Error creating courses user:', error.message);
     throw new Error('Failed to create courses.');
   }
 }
@@ -80,7 +80,7 @@ async function getCourse(userId, courseId) {
     );
     return response.data.course; 
   } catch (error) {
-    console.error('Error getting courses info:', error);
+    console.error('Error getting courses info:', error.message);
     throw new Error('Failed to get course.');
   }
 }
@@ -122,7 +122,7 @@ async function addLesson(userId, courseId, lessonName, lessonDescription, lesson
 
     return response.data; 
   } catch (error) {
-    console.error('Error creating lesson:', error);
+    console.error('Error creating lesson:', error.message);
     throw new Error('Failed to create lesson.');
   }
 }
@@ -140,7 +140,7 @@ async function getAllCourses(userId) {
     );
     return response.data.course; // Adjust if the array is nested deeper
   } catch (error) {
-    console.error('Error getting courses for expert user:', error);
+    console.error('Error getting courses for expert user:', error.message);
     throw new Error('Failed to get expert courses.');
   }
 }
@@ -160,7 +160,7 @@ async function getCourseLessons(userId,courseId) {
     );
     return response.data.lesson; // Adjust if the array is nested deeper
   } catch (error) {
-    console.error('Error getting courses for expert user:', error);
+    console.error('Error getting courses for expert user:', error.message);
     throw new Error('Failed to get expert courses.');
   }
 }
@@ -181,10 +181,51 @@ async function getLesson(userId, courseId, lessonId) {
 
     return response.data.lesson; 
   } catch (error) {
-    console.error('Error getting lesson info:', error);
+    console.error('Error getting lesson info:', error.message);
     throw new Error('Failed to get lesson.');
   }
 }
+async function getPendingCourses(userId) {
+  try {
+    const response = await axios.post(
+      `${url}/expert/course/order`,
+      { userId: userId },
+      {
+        params: {
+          jwt: jwt,
+        },
+      }
+    );
+    return response.data.pendingCourses; // Return the list of pending courses (or appropriate response data)
+  } catch (error) {
+    console.error('Error fetching pending courses:', error.message);
+    throw new Error('Failed to fetch pending courses.');
+  }
+}
+
+async function manageOrder(userId, courseId, clientId, status) {
+  try {
+    const response = await axios.post(
+      `${url}/expert/course/order/manage`,
+      {
+        userId: userId,
+        courseId: courseId,
+        clientId: clientId,
+        status: status,
+      },
+      {
+        params: {
+          jwt: jwt,
+        },
+      }
+    );
+    return response.data; // Return the response data, which might include the updated course information
+  } catch (error) {
+    console.error('Error managing order:', error.message);
+    throw new Error('Failed to manage order.');
+  }
+}
+
 
 module.exports = {
 createUser,
@@ -194,5 +235,7 @@ getCourse,
 addLesson,
 getAllCourses,
 getCourseLessons,
-getLesson
+getLesson,
+getPendingCourses,
+manageOrder
 };

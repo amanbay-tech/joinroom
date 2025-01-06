@@ -9,7 +9,9 @@ const {
   getCourse,
   addLesson,
   getCourseLessons,
-  getLesson
+  getLesson,
+  getPendingCourses,
+  manageOrder
 } = require('./joinroom-client');
 
 // In-memory storage for courses
@@ -120,6 +122,81 @@ bot.action(/add_lesson_(\d+)/, (ctx) => {
     ctx.reply('Қате пайда болды. Қайта көріңіз.');
   }
 });
+bot.action('pending_courses', async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    const pendingCourses = await getPendingCourses(userId);  // Get all pending courses
+
+    if (!pendingCourses || pendingCourses.length === 0) {
+      return ctx.reply('Қазіргі уақытта күтілуде тұрған курстар жоқ.');  // No pending courses for this user
+    }
+
+    // Prepare the course list with accept and reject buttons
+    const courseList = pendingCourses.map(course => {
+      const { courseName, userName, courseId, clientId } = course;
+
+      // Create the inline keyboard with accept and reject buttons for each course
+      return {
+        courseName: `${courseName} - ${userName}`,
+        courseId: courseId,  // Pass the courseId as integer
+        clientId: clientId,  // Pass the clientId here (string)
+        keyboard: Markup.inlineKeyboard([
+          Markup.button.callback('Қабылдау ✅', `accept_${courseId}_${clientId}`),  // Accept button with courseId (int) and clientId (string)
+          Markup.button.callback('Бас тарту ❌', `reject_${courseId}_${clientId}`)  // Reject button with courseId (int) and clientId (string)
+        ])
+      };
+    });
+
+    // Send the list of courses with their accept/reject options
+    for (let course of courseList) {
+      await ctx.reply(
+        `Курс: ${course.courseName}`,
+        course.keyboard
+      );
+    }
+
+  } catch (error) {
+    console.error('Error fetching pending courses:', error);
+    await ctx.reply('Қате орын алды, күтілуде тұрған курстарды алу кезінде.');
+  }
+});
+// Handle Accept button action
+bot.action(/accept_(\d+)_(\S+)/, async (ctx) => {
+  const courseId = parseInt(ctx.match[1], 10);  // Extract courseId as integer
+  const clientId = parseInt(ctx.match[2], 10);  // Extract clientId as string
+  const userId = ctx.from.id;
+
+  try {
+    // Call the manageOrder function with courseId, clientId, and status "ALLOWED"
+    const response = await manageOrder(userId, courseId, clientId, "ALLOWED");
+    console.log(response)
+    // Reply with success message
+    await ctx.reply(`Пайдаланушы ${response.userName} - ${response.courseName} курсыңа тіркелді`);
+  } catch (error) {
+    console.error('Error managing order (accept):', error.message);
+    await ctx.reply('Қате орын алды, курс статусын өзгерту мүмкін емес.');
+  }
+});
+
+// Handle Reject button action
+bot.action(/reject_(\d+)_(\S+)/, async (ctx) => {
+  const courseId = parseInt(ctx.match[1], 10);  // Extract courseId as integer
+  const clientId = parseInt(ctx.match[2], 10);  // Extract clientId as string
+  const userId = ctx.from.id;
+
+  try {
+    // Call the manageOrder function with courseId, clientId, and status "REJECTED"
+    const response = await manageOrder(userId, courseId, clientId, "REJECTED");
+
+    // Reply with success message
+    await ctx.reply(`Курс бас тартылды: ${response.courseName}`);
+  } catch (error) {
+    console.error('Error managing order (reject):', error.message);
+    await ctx.reply('Қате орын алды, курс статусын өзгерту мүмкін емес.');
+  }
+});
+
+
 
 // Unified text handler for course and lesson creation process
 bot.on('text', async (ctx) => {
@@ -255,8 +332,9 @@ bot.action('back_to_menu', (ctx) => {
   ctx.reply(
     'Қандай қызметті таңдайсыз❔',
     Markup.inlineKeyboard([
-      Markup.button.callback('Жаңа курс қосу📘', 'create_course'),
-      Markup.button.callback('Менің курстарым📚', 'list_courses'),
+      [Markup.button.callback('Жаңа курс қосу📘', 'create_course')],
+      [Markup.button.callback('Менің курстарым📚', 'list_courses')],
+      [Markup.button.callback('Cұраныстар⏳', 'pending_courses')] // Each button is on a new line
     ])
   );
 });

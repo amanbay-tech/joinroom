@@ -18,7 +18,7 @@ async function createUser(userId) {
 
     return response.data; // Return the response data directly
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error('Error creating user:', error.message);
     throw new Error('Failed to create a user.');
   }
 }
@@ -35,14 +35,14 @@ async function getExpertCourses(userId) {
     );
     return response.data.course; // Adjust if the array is nested deeper
   } catch (error) {
-    console.error('Error getting courses for expert user:', error);
+    console.error('Error getting courses for expert user:', error.message);
     throw new Error('Failed to get expert courses.');
   }
 }
 
 async function getCourse(userId, courseId) {
   try {
-    const response = await axios.post(`${url}/expert/course/get`, {
+    const response = await axios.post(`${url}/client/course`, {
         userId: userId,
         courseId: courseId,
     },
@@ -54,7 +54,7 @@ async function getCourse(userId, courseId) {
     );
     return response.data.course; 
   } catch (error) {
-    console.error('Error creating courses user:', error);
+    console.error('Error creating courses user:', error.message);
     throw new Error('Failed to create courses.');
   }
 }
@@ -72,7 +72,7 @@ async function getAllCourses(userId) {
     );
     return response.data.courses; // Adjust if the array is nested deeper
   } catch (error) {
-    console.error('Error getting courses for expert user:', error);
+    console.error('Error getting courses for expert user:', error.message);
     throw new Error('Failed to get expert courses.');
   }
 }
@@ -90,7 +90,7 @@ async function getMyCourses(userId) {
     );
     return response.data.course; // Adjust if the array is nested deeper
   } catch (error) {
-    console.error('Error getting user courses', error);
+    console.error('Error getting user courses', error.message);
     throw new Error('Failed to get user courses.');
   }
 }
@@ -112,14 +112,14 @@ async function subscribeCourse(userId, courseId) {
 
     return response.data; // Return the response data directly for further use
   } catch (error) {
-    console.error('Error subscribing user to course:', error);
+    console.error('Error subscribing user to course:', error.message);
     throw new Error('Failed to subscribe user to the course.');
   }
 }
 async function getCourseLessons(userId,courseId) {
   try {
     const response = await axios.post(
-      `${url}/expert/lesson`,
+      `${url}/client/course/lessons`,
       { 
         userId: userId,
         courseId:courseId
@@ -132,13 +132,13 @@ async function getCourseLessons(userId,courseId) {
     );
     return response.data.lesson; // Adjust if the array is nested deeper
   } catch (error) {
-    console.error('Error getting courses for expert user:', error);
+    console.error('Error getting courses for expert user:', error.message);
     throw new Error('Failed to get expert courses.');
   }
 }
 async function getLesson(userId, courseId, lessonId) {
   try {
-    const response = await axios.post(`${url}/expert/lesson/get`, {
+    const response = await axios.post(`${url}/client/course/lesson`, {
         userId: userId,
         courseId: courseId,
         lessonId: lessonId,
@@ -153,7 +153,7 @@ async function getLesson(userId, courseId, lessonId) {
 
     return response.data.lesson; 
   } catch (error) {
-    console.error('Error getting lesson info:', error);
+    console.error('Error getting lesson info:', error.message);
     throw new Error('Failed to get lesson.');
   }
 }

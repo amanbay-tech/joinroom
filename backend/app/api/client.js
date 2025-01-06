@@ -7,7 +7,6 @@ router.post("/", async (req, res) => {
   try {
     const userId = req.body.userId.toString();
     const courseId = parseInt(req.body.courseId, 10);
-
     if (!userId) {
       return res
         .status(400)
@@ -20,10 +19,11 @@ router.post("/", async (req, res) => {
         .status(401)
         .json({ error: "User error", message: "User not found" });
     }
+    console.log("body", req.body, user.id)
 
     const mycourse = await prisma.myCourse.findFirst({
       where: {
-        courseId,
+        id: courseId,
         userId: user.id,
         isActive: true,
         status: "ALLOWED",
@@ -35,15 +35,63 @@ router.post("/", async (req, res) => {
         .status(403)
         .json({ error: "Access denied", message: "The course is not allowed" });
     }
+    const course = await prisma.course.findFirst({
+      where: {
+        id: mycourse.courseId,
+      },
+      include: {
+        lesson: true,
+      },
+    });
+    console.log(course)
+    res.status(200).json({ course });
+  } catch (error) {
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: error.message,
+    });
+  }
+});
+router.post("/lessons", async (req, res) => {
+  try {
+    const userId = req.body.userId.toString();
+    const courseId = parseInt(req.body.courseId, 10);
+    if (!userId || !courseId) {
+      return res.status(400).json({ error: "Bad request", message: "UserId and courseId are required" });
+    }
 
-    const course = await prisma.course.findUnique({
+    // Verify the user
+    const user = await prisma.user.findUnique({ where: { userId } });
+    if (!user) {
+      return res.status(401).json({ error: "User error", message: "User not found" });
+    }
+
+    // Verify the user has access to the course
+    const mycourse = await prisma.myCourse.findFirst({
       where: {
         id: courseId,
-        include: { lesson: true },
+        userId: user.id,
+        isActive: true,
+        status: "ALLOWED",
       },
     });
 
-    res.status(200).json({ course });
+    if (!mycourse) {
+      return res.status(403).json({ error: "Access denied", message: "The course is not allowed" });
+    }
+
+    // Fetch the course and its lessons
+    const course = await prisma.course.findFirst({
+      where: { id: mycourse.courseId },
+      include: { lesson: true }, // Including related lessons
+    });
+
+    if (!course) {
+      return res.status(404).json({ error: "Not found", message: "Course not found" });
+    }
+
+    // Return the lessons
+    res.status(200).json({ lesson: course.lesson });
   } catch (error) {
     res.status(500).json({
       error: "Internal Server Error",
@@ -56,43 +104,46 @@ router.post("/lesson", async (req, res) => {
   try {
     const userId = req.body.userId.toString();
     const courseId = parseInt(req.body.courseId, 10);
-    const lessonId = parseInt(req.body.courseId, 10);
+    const lessonId = parseInt(req.body.lessonId, 10); // Corrected this line
+    console.log("req.body", req.body);
 
     if (!userId) {
-      return res
-        .status(400)
-        .json({ error: "Bad request", message: "UserId is required" });
+      return res.status(400).json({ error: "Bad request", message: "UserId is required" });
     }
 
     const user = await prisma.user.findUnique({ where: { userId } });
     if (!user) {
-      return res
-        .status(401)
-        .json({ error: "User error", message: "User not found" });
+      return res.status(401).json({ error: "User error", message: "User not found" });
     }
 
-    const course = await prisma.myCourse.findFirst({
+    // Verify that the user is allowed access to the course
+    const myCourse = await prisma.myCourse.findFirst({
       where: {
-        courseId,
+        id: courseId,
         userId: user.id,
         isActive: true,
         status: "ALLOWED",
       },
     });
 
-    if (!course) {
-      return res
-        .status(403)
-        .json({ error: "Access denied", message: "The course is not allowed" });
+    if (!myCourse) {
+      return res.status(403).json({ error: "Access denied", message: "The course is not allowed" });
     }
 
-    const lesson = await prisma.lesson.findUnique({
+    // Fetch the lesson related to the course
+    const lesson = await prisma.lesson.findFirst({
       where: {
         id: lessonId,
+        courseId: myCourse.courseId,  // Ensure that the lesson belongs to the specified course
       },
     });
 
+    if (!lesson) {
+      return res.status(404).json({ error: "Lesson not found", message: "The requested lesson was not found for the course" });
+    }
+
     res.status(200).json({ lesson });
+    console.log("lesson", lesson);
   } catch (error) {
     res.status(500).json({
       error: "Internal Server Error",
@@ -228,7 +279,7 @@ router.post("/order", async (req, res) => {
       data: {
         courseId,
         userId: user.id,
-        status: "ALLOWED",
+        status: "PENDING",
         courseOwnerId: course.ownerId,
       },
     });

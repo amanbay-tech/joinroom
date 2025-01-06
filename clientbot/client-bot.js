@@ -45,7 +45,6 @@ bot.action('subscribe', async (ctx) => {
   try {
     const userId = ctx.from.id;
     const availableCourses = await getAllCourses(userId);
-    console.log("availableCourses", availableCourses)
     if (!availableCourses || availableCourses.length === 0) {
       return ctx.reply('Қазіргі уақытта қолжетімді курстар жоқ.');
     }
@@ -121,12 +120,12 @@ bot.action(/my_course_(\d+)/, async (ctx) => {
 });
 bot.action(/view_course_(\d+)/, async (ctx) => {
   try {
-    const courseId = parseInt(ctx.match[1], 10);
+    const id = parseInt(ctx.match[1], 10);
     const userId = ctx.from.id;
 
     // Fetch course details using the helper function
-    const course = await getCourse(userId, courseId);
-
+    const course = await getCourse(userId, id);
+    
     // Check if the course was found
     if (!course) {
       return ctx.reply('Курс табылмады.');
@@ -142,7 +141,7 @@ bot.action(/view_course_(\d+)/, async (ctx) => {
     );
   } catch (error) {
     console.error('Error fetching course details:', error);
-    await ctx.reply('Курсты алу кезінде қате пайда болды. Қайта көріңіз.');
+    await ctx.reply(`Курсты алу кезінде қате пайда болды. Қайта көріңіз.`);
   }
 });
 
@@ -179,6 +178,7 @@ bot.action(/list_lessons_(\d+)/, async (ctx) => {
     const courseId = parseInt(ctx.match[1], 10); 
     const userId = ctx.from.id;
     const lessons = await getCourseLessons(userId, courseId);
+    console.log("lessons", lessons)
 
     if (!lessons || lessons.length === 0) {
       return ctx.reply('Бұл курста сабақтар жоқ.');
