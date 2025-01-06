@@ -70,7 +70,7 @@ async function getAllCourses(userId) {
         },
       }
     );
-    return response.data.course; // Adjust if the array is nested deeper
+    return response.data.courses; // Adjust if the array is nested deeper
   } catch (error) {
     console.error('Error getting courses for expert user:', error);
     throw new Error('Failed to get expert courses.');

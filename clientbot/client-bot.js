@@ -45,7 +45,7 @@ bot.action('subscribe', async (ctx) => {
   try {
     const userId = ctx.from.id;
     const availableCourses = await getAllCourses(userId);
-    
+    console.log("availableCourses", availableCourses)
     if (!availableCourses || availableCourses.length === 0) {
       return ctx.reply('Қазіргі уақытта қолжетімді курстар жоқ.');
     }
@@ -77,13 +77,17 @@ bot.action('list_courses', async (ctx) => {
         ])
       );
     }
-    const buttons = courses.map((course) => 
-      Markup.button.callback(course.name, `my_course_${course.id}`)
-    );
+
+    const buttons = courses.map((course) => {
+      // Ensure each button has a text field
+      return Markup.button.callback(course.course.name || 'Курс атауы жоқ', `my_course_${course.id}`);
+    });
+
     buttons.push(Markup.button.callback('Артқа🔙', 'back_to_menu'));
+
     await ctx.editMessageText(
       'Сіздің жазылған курстарыңыз:',
-      Markup.inlineKeyboard(buttons, { columns: 1 })
+      Markup.inlineKeyboard(buttons, { columns: 1 })// Use .extra() to ensure correct format
     );
   } catch (error) {
     console.error('Error fetching user courses:', error);

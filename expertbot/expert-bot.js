@@ -20,7 +20,7 @@ const currentStep = {};
 bot.start(async (ctx) => {
   try{
     const userId = ctx.from.id;
-    const username = ctx.from.username; 
+    const username = ctx.chat.username; 
 
     await createUser(userId, username);
     ctx.reply(

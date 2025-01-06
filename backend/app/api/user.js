@@ -5,7 +5,8 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const userId = parseInt(req.body.userId, 10);
+    const userId = req.body.userId.toString();
+    const username = req.body.username || 'empty'; // If username is null or undefined, set it to an empty string
     if (!userId) {
       return res
         .status(400)
@@ -17,7 +18,7 @@ router.post("/", async (req, res) => {
       const newuser = await prisma.user.create({
         data: {
           userId,
-          username: "empty",
+          username,
         },
       });
 
@@ -26,6 +27,7 @@ router.post("/", async (req, res) => {
 
     return res.status(200).json({ user });
   } catch (error) {
+    console.error('Error occurred:', error.message);
     res.status(500).json({
       error: "Internal Server Error",
       message: error.message,

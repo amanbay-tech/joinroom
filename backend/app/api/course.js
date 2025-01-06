@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const userId = parseInt(req.body.userId, 10);
+    const userId = req.body.userId.toString();
 
     if (!userId) {
       return res
@@ -37,7 +37,7 @@ router.post("/", async (req, res) => {
 });
 router.post("/get", async (req, res) => {
   try {
-    const userId = parseInt(req.body.userId, 10);
+    const userId = req.body.userId.toString();
     const courseId = parseInt(req.body.courseId, 10);
 
     if (!userId) {
@@ -70,7 +70,7 @@ router.post("/get", async (req, res) => {
 
 router.post("/create", async (req, res) => {
   try {
-    const userId = parseInt(req.body.userId, 10);
+    const userId = req.body.userId.toString();
     const { name, description } = req.body;
 
     if (!userId) {
@@ -105,8 +105,8 @@ router.post("/create", async (req, res) => {
 
 router.post("/edit", async (req, res) => {
   try {
-    const userId = parseInt(req.body.userId, 10);
-    const courseId = parseInt(req.body.userId, 10);
+    const userId = req.body.userId.toString();
+    const courseId = parseInt(req.body.courseId, 10);
     const { name, description } = req.body;
 
     if (!userId) {
@@ -138,8 +138,8 @@ router.post("/edit", async (req, res) => {
 
 router.post("/delete", async (req, res) => {
   try {
-    const userId = parseInt(req.body.userId, 10);
-    const courseId = parseInt(req.body.userId, 10);
+    const userId = req.body.userId.toString();
+    const courseId = parseInt(req.body.courseId, 10);
 
     if (!userId) {
       return res
@@ -170,8 +170,8 @@ router.post("/delete", async (req, res) => {
 
 router.post("/order", async (req, res) => {
   try {
-    const userId = parseInt(req.body.userId, 10);
-    const courseId = parseInt(req.body.userId, 10);
+    const userId = req.body.userId.toString();
+    const courseId = parseInt(req.body.courseId, 10);
 
     if (!userId) {
       return res
@@ -210,8 +210,8 @@ router.post("/order", async (req, res) => {
 
 router.post("/order/manage", async (req, res) => {
   try {
-    const userId = parseInt(req.body.userId, 10);
-    const courseId = parseInt(req.body.userId, 10);
+    const userId = req.body.userId.toString();
+    const courseId = parseInt(req.body.courseId, 10);
     const clientId = parseInt(req.body.clientId, 10);
     const { status } = req.body;
 

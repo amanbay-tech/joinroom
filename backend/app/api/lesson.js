@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const userId = parseInt(req.body.userId, 10);
+    const userId = req.body.userId.toString();
     const courseId = parseInt(req.body.courseId, 10);
 
     if (!userId) {
@@ -54,7 +54,7 @@ router.post("/", async (req, res) => {
 });
 router.post("/get", async (req, res) => {
   try {
-    const userId = parseInt(req.body.userId, 10);
+    const userId = req.body.userId.toString();
     const courseId = parseInt(req.body.courseId, 10);
     const lessonId = parseInt(req.body.lessonId, 10);
 
@@ -110,7 +110,7 @@ router.post("/get", async (req, res) => {
 
 router.post("/create", async (req, res) => {
   try {
-    const userId = parseInt(req.body.userId, 10);
+    const userId = req.body.userId.toString();
     const courseId = parseInt(req.body.courseId, 10);
     const orderNumber = parseInt(req.body.orderNumber, 10);
     const { name, description, url } = req.body;
@@ -149,8 +149,8 @@ router.post("/create", async (req, res) => {
 
 router.post("/edit", async (req, res) => {
   try {
-    const userId = parseInt(req.body.userId, 10);
-    const courseId = parseInt(req.body.userId, 10);
+    const userId = req.body.userId.toString();
+    const courseId = parseInt(req.body.courseId, 10);
     const { name, description, url } = req.body;
 
     if (!userId) {

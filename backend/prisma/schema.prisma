@@ -16,7 +16,7 @@ enum Status {
 
 model User {
   id    Int    @id @default(autoincrement())
-  userId Int @unique
+  userId String @unique
   username String
   email String?
   phone String?
@@ -72,6 +72,8 @@ model MyCourse {
   courseOwnerId  Int
   updatedAt  DateTime   @updatedAt
   createdAt  DateTime   @default(now())
+
+  @@unique([userId, courseId]) 
 }
 
 
