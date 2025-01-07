@@ -6,6 +6,7 @@ const {
   getAllCourses,
   getMyCourses,
   getCourse,
+  getMyCourse,
   subscribeCourse,
   getCourseLessons,
   getLesson
@@ -100,7 +101,7 @@ bot.action(/my_course_(\d+)/, async (ctx) => {
     const courseId = parseInt(ctx.match[1], 10); 
     const userId = ctx.from.id;
 
-    const course = await getCourse(userId, courseId);
+    const course = await getMyCourse(userId, courseId);
 
     if (!course) {
       return ctx.reply('Курс табылмады.');
@@ -162,7 +163,7 @@ bot.action(/subscribe_to_(\d+)/, async (ctx) => {
 
     // Respond with a confirmation message including the course name
     return ctx.reply(
-      `${course.name} - Жазылуға сұраныс жіберілді ✅`,
+      `${course.name} - курсына жазылуға сұраныс жіберілді ✅`,
       Markup.inlineKeyboard([
         Markup.button.callback('Бас менюге оралу📲', 'back_to_menu'),
         Markup.button.callback('Курстар тізіміне оралу🔙', 'subscribe')

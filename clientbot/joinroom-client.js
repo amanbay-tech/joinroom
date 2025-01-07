@@ -40,9 +40,27 @@ async function getExpertCourses(userId) {
   }
 }
 
-async function getCourse(userId, courseId) {
+async function getMyCourse(userId, courseId) {
   try {
     const response = await axios.post(`${url}/client/course`, {
+        userId: userId,
+        courseId: courseId,
+    },
+    {
+        params: {
+          jwt: jwt, 
+        },
+      }
+    );
+    return response.data.course; 
+  } catch (error) {
+    console.error('Error creating courses user:', error.message);
+    throw new Error('Failed to create courses.');
+  }
+}
+async function getCourse(userId, courseId) {
+  try {
+    const response = await axios.post(`${url}/expert/course/get`, {
         userId: userId,
         courseId: courseId,
     },
@@ -166,4 +184,5 @@ getMyCourses,
 subscribeCourse,
 getCourseLessons,
 getLesson,
+getMyCourse
 };

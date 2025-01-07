@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
+    console.log("body", req.body)
     const userId = req.body.userId.toString();
     const courseId = parseInt(req.body.courseId, 10);
     if (!userId) {
@@ -19,7 +20,6 @@ router.post("/", async (req, res) => {
         .status(401)
         .json({ error: "User error", message: "User not found" });
     }
-    console.log("body", req.body, user.id)
 
     const mycourse = await prisma.myCourse.findFirst({
       where: {
@@ -240,7 +240,7 @@ router.post("/order", async (req, res) => {
   try {
     const userId = req.body.userId.toString();
     const courseId = parseInt(req.body.courseId, 10);
-
+    console.log("body", req.body)
     if (!userId) {
       return res
         .status(400)

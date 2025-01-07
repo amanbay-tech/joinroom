@@ -2,6 +2,9 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const express = require("express");
 const logger = require("../logger");
+const { Telegraf } = require('telegraf');
+const bot = new Telegraf(process.env.CLIENT_BOT_TOKEN);  // Ensure the bot instance is created
+
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -285,6 +288,15 @@ router.post("/order/manage", async (req, res) => {
       where: { id: mycourse.id },
       data: { status },
     });
+    const client = await prisma.user.findUnique({ where: { id : clientId } });
+    if (!user) {
+      return res.status(401).json({ error: "User error", message: "User not found" });
+    }
+    const statusMessage = status === "ALLOWED" 
+      ? `Сіз "${mycourse.course.name}" курсына тіркелдіңіз қабылданды! ✅`
+      : `Сіздің "${mycourse.course.name}" курсыңа жазылу өтінішіңіз қабылданбады ❌`;
+
+    await bot.telegram.sendMessage(client.userId, statusMessage);  // Send message to the client via Telegram bot
 
     // Return the updated course with courseName and userName
     res.status(200).json({
