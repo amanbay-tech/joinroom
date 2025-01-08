@@ -1,9 +1,9 @@
 services:
-  frontend:
-    container_name: joinroom-frontend
-    image: frontend
+  client:
+    container_name: joinroom-client
+    image: client
     build:
-      context: ./frontend
+      context: ./client
       dockerfile: DockerFile
     ports:
       - 3000:3000
@@ -15,6 +15,23 @@ services:
       - backend
     networks:
       - joinroom_network
+  expert:
+    container_name: joinroom-expert
+    image: expert
+    build:
+      context: ./expert
+      dockerfile: DockerFile
+    ports:
+      - 3001:3001
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:4000
+      - SERVER_JWT=USW2122DDMWSMKL32OOSRM6A97x3S6HJPP01
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      - joinroom_network
+
 
   backend:
     container_name: joinroom-backend

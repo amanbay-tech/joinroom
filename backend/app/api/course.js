@@ -2,8 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const express = require("express");
 const logger = require("../logger");
-const { Telegraf } = require('telegraf');
-const bot = new Telegraf(process.env.CLIENT_BOT_TOKEN);  // Ensure the bot instance is created
+const {sendMessage}  = require("./bot");
 
 const router = express.Router();
 
@@ -270,14 +269,6 @@ router.post("/order/manage", async (req, res) => {
       return res.status(404).json({ message: "Pending course not found" });
     }
 
-    // Check if the course status is "PENDING"
-    if (mycourse.status !== "PENDING") {
-      return res.status(400).json({
-        error: "Invalid status",
-        message: "The course status must be 'PENDING' to be updated",
-      });
-    }
-
     // Determine the userName (either the username or the userId if empty)
     const userName = (mycourse.user && mycourse.user.username && mycourse.user.username !== 'empty')
       ? mycourse.user.username
@@ -296,7 +287,7 @@ router.post("/order/manage", async (req, res) => {
       ? `Сіз "${mycourse.course.name}" курсына тіркелдіңіз қабылданды! ✅`
       : `Сіздің "${mycourse.course.name}" курсыңа жазылу өтінішіңіз қабылданбады ❌`;
 
-    await bot.telegram.sendMessage(client.userId, statusMessage);  // Send message to the client via Telegram bot
+    await sendMessage(client.userId, statusMessage);  // Send message to the client via Telegram bot
 
     // Return the updated course with courseName and userName
     res.status(200).json({
