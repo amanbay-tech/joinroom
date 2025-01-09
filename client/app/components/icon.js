@@ -1,7 +1,7 @@
 // Icon.js
 import React from "react";
 
-const Icon = () => (
+export const Icon = () => (
   <svg
     width="80"
     height="80"
@@ -23,4 +23,3 @@ const Icon = () => (
   </svg>
 );
 
-export default Icon;

@@ -1,17 +1,35 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-// import  Back  from "@/components/back"
-// import  MoreIcon  from "@/components/more"
-import { Back, MoreIcon, BookIcon, ArrowIcon } from '@/components/lib';
 
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { Back, MoreIcon, BookIcon, ArrowIcon, MainIcon } from "@/app/components/lib";
+import useCustomQuery from "@/app/hooks/useQuery";
 
 export default function Lessons() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userId, setUserId] = useState(null);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  // Fetch userId from sessionStorage or localStorage
+  useEffect(() => {
+    const storedUserId = sessionStorage.getItem("userId") || localStorage.getItem("userId");
+    setUserId(storedUserId);
+  }, []);
+
+  // Use `useCustomQuery` to fetch courses based on userId
+  const { data: courses, isLoading, isError } = useCustomQuery("myCourses", {
+    userId,
+  });
+
+  if (isLoading) {
+    return <p className="text-center">Курстар жүктелуде...</p>;
+  }
+
+  if (isError) {
+    return <p className="text-center text-red-500">Курстарды жүктеу кезінде қате пайда болды.</p>;
+  }
+
+  if (!courses?.course) {
+    return <p className="text-center">Курстар табылмады.</p>;
+  }
 
   return (
     <div className="">
@@ -19,63 +37,50 @@ export default function Lessons() {
         <div className="flex pt-5 sm:flex phone:flex-col mx-auto">
           <div className="mx-auto">
             <Link href="/">
-              <Back/>
+              <Back />
             </Link>
           </div>
 
           <h1 className="font-bold text-xl text-black">Менің курстарым</h1>
-          <MoreIcon/>
+          <MoreIcon />
         </div>
-        <div className="flex phone:flex-col max-w-[358px] mx-auto mt-3 mb-8 py-4 max-h-[101px] bg-[#F4F5F9] rounded-xl">
-          <div className="">
-            <Image
-              src="/images1.png"
-              alt="figma"
-              width={81}
-              height={81}
-              className="ml-2"
-            />
+        <div className="flex phone:flex-col max-w-[358px] mx-auto mt-3 mb-3 pt-3 pb-4 max-h-[101px] bg-[#F4F5F9] rounded-xl">
+          <div className="mx-2 mb-2">
+            <MainIcon />
           </div>
-          <div className="ml-2">
-            <p className="font-bold flex phone:flex phone:flex-col">
-              Figma негіздері
-            </p>
-            <span className="font-normal leading-1">
-              Фигма негіздерін 12 сабақта <br /> үйрену
-            </span>
-          </div>
+          <div className="ml-2 pr-2">
+            <p className="font-bold flex phone:flex phone:flex-col break-words line-clamp-1">
+              {courses.course[0]?.course?.name || "Cіздің курсыңыз"}
+              </p>
+              <span className="font-normal leading-1  break-words line-clamp-2">
+                {courses.course[0]?.course?.description || "Курстың сипаттамасы"}
+                </span>
+              </div>
+
+
+
         </div>
         <h2 className="font-bold text-base ml-3">Менің курстарым</h2>
         <div className="ml-3">
-          <a className="flex phone:flex-row py-4 bg-[#F5FAF5] max-w-[358px] mt-3 rounded-xl">
-          <BookIcon/>
-            <span className="font-bold ml-3 mr-52">Курс 2.</span>
-            <ArrowIcon/>
-          </a>
-          <a className="flex phone:flex-row py-4 bg-[#FFF6F4] max-w-[358px] mt-3 rounded-xl">
-           <BookIcon/>
-            <span className="font-bold ml-3 mr-52">Курс 2.</span>
-            <ArrowIcon/>
-          </a>
-          <a className="flex phone:flex-row py-4 bg-[#F2F8FC] max-w-[358px] mt-3 rounded-xl">
-          <BookIcon/>
-            <span className="font-bold ml-3 mr-52">Курс 2.</span>
-            <ArrowIcon/>
-          </a>
-          <a className="flex phone:flex-row py-4 bg-[#F5FAF5] max-w-[358px] mt-3 rounded-xl">
-          <BookIcon/>
-            <span className="font-bold ml-3 mr-52">Курс 2.</span>
-            <ArrowIcon/>
-          </a>
-        </div>
-
-        {/* <button
-          onClick={openModal}
-          className="px-40 mt-10 text-xl mx-auto border-none py-4 flex justify-center  bg-[#1C8ED7] border rounded-full"
-        >
-          <p className="text-white">Қосу</p>
-        </button> */}
-        {/* <Modal isOpen={isModalOpen} onClose={closeModal} /> */}
+  {/* Dynamically render courses */}
+  {courses.course.map((courseData, index) => (
+    <Link
+      key={courseData.id}
+      href={`/courses/${courseData.id}`}
+      className={`flex items-center justify-between py-4 px-4 ${
+        index % 3 === 0 ? "bg-[#F5FAF5]" : index % 3 === 1 ? "bg-[#FFF6F4]" : "bg-[#F2F8FC]"
+      } max-w-[358px] mt-3 rounded-xl`}
+    >
+      <div className="flex items-center">
+        <BookIcon />
+        <span className="font-bold ml-3 break-all truncate">
+          {courseData.course?.name || "Аты жоқ курс"}
+        </span>
+      </div>
+      <ArrowIcon />
+    </Link>
+  ))}
+</div>
       </div>
     </div>
   );

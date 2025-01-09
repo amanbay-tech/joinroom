@@ -1,6 +1,6 @@
 import React from "react";
 
-const MainIcon = () => {
+export const MainIcon = () => {
   return (
     <svg
       width="80"
@@ -25,4 +25,3 @@ const MainIcon = () => {
   );
 };
 
-export default MainIcon;

@@ -1,134 +1,153 @@
 "use client";
-import Image from "next/image";
-import React, { useRef, useEffect, useState } from "react";
-import Head from "next/head";
-import Icon from "../components/icon";
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import useForm from "@/app/hooks/useForm";
-import useCustomQuery from "@/app/hooks/useQuery";
 import { toast } from "react-toastify";
+import useForm from "@/app/hooks/useForm";
 import useCustomMutation from "@/app/hooks/useMutation";
-import MainIcon from "@/components/main";
+import { MainIcon } from "@/app/components/lib";
+import { Button } from "@nextui-org/react";
 
 export default function Home() {
-  const [buttonWidth, setButtonWidth] = useState("auto");
   const [modalVisible, setModalVisible] = useState(true);
   const [username, setUsername] = useState("");
-  const [userId, setUserId] = useState("");
-  const joinRoomRef = useRef(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
+  // Check session storage for userId and username
   useEffect(() => {
-    // Adjust the width of the button to match the width of the "Join room" text
-    if (joinRoomRef.current) {
-      setButtonWidth(`${joinRoomRef.current.offsetWidth + 50}px`); // Increased width
+    const storedUserId = sessionStorage.getItem("userId");
+    const storedLocalUserId = localStorage.getItem("userId");
+    console.log("storedUserId", storedUserId)
+    console.log("storedLocalUserId", storedLocalUserId)
+
+
+    if (storedUserId || storedLocalUserId) {
+      // If both exist, don't show modal
+      setModalVisible(false);
+    } else {
+      // If not, show modal
+      setModalVisible(true);
     }
   }, []);
 
-  const { mutateAsync: user, isPending } = useCustomMutation(
-    "user",
-    {
-      onSuccess: async () => {
-        toast.success("Cәтті!");
-      },
-      onError: () => {
-        toast.error("Қате орын алды"); // Assuming mutationError is defined elsewhere
-      },
+
+  const { mutateAsync: user } = useCustomMutation("user", {
+    onSuccess: async (response) => {
+      toast.success("Cәтті!");
+      sessionStorage.setItem("userId", response.userId); // Save userId in session
+      sessionStorage.setItem("username", username); // Save username in session
+      localStorage.setItem("userId", response.userId);
+      localStorage.setItem("username", username);
+
+      setModalVisible(false); // Close modal on success
     },
-  );
+    onError: () => {
+      toast.error("Қате орын алды");
+    },
+  });
 
   const newUser = useForm(
     { username: "" },
     {
       username: (username) =>
-        /^[A-Za-z0-9_]{5,32}$/.test(username)
+        username.trim() === ""
+          ? "Username is required"
+          : /^[A-Za-z0-9_]{5,32}$/.test(username)
           ? ""
-          : "Username қате форматта енгізілді", // Error message for invalid username
-    },
+          : "Username қате форматта енгізілді",
+    }
   );
 
-  const handleCreateUser = () => {
-    // Logic for creating a user
-    console.log("Creating user with username:", username);
-    // Call API or handle logic to create user
-    setModalVisible(false);
-  };
+  const isUsernameValid =
+    username.trim() !== "" && !newUser.errors.username;
 
   const handleCheckUser = async () => {
-    // Logic for checking user by ID or username
-    console.log("Checking user with ID/Username:", userId || username);
-    // Call API or handle logic to check user
-
-    if (username) {
-      try {
-        const userResponse = await user({ username }); // Send username to the mutation
-        console.log(userResponse);
-        setModalVisible(false); // Hide the modal on success
-      } catch (error) {
-        console.error("Error checking user:", error);
-        toast.error("Ошибка при проверке пользователя.");
+    try {
+      if (!username.trim()) {
+        setErrorMessage("Өтінемін username-ді енгізіңіз");
+        return;
+      } else if (/[^A-Za-z0-9_]/.test(username)) {
+        setErrorMessage("Username тек латын әріптері, сандар немесе _ символынан тұруы керек");
+        return;
+      } else if (username.length < 5 || username.length > 32) {
+        setErrorMessage("Username ұзындығы 5 пен 32 символ арасында болуы керек");
+        return;
       }
-    } else {
-      toast.error("Username is required.");
+
+      const userResponse = await user({ username });
+    } catch (error) {
+      setErrorMessage(
+        <>
+          <a
+            href="https://t.me/JoinRoomBot"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 underline"
+          >
+            JoinRoomBot
+          </a>{" "}
+          bot-ына /start деп жазыңыз
+        </>
+      );
     }
   };
 
-  const isUsernameValid = !newUser.errors.username; // Check if username is valid
-
   return (
-    <div className="mx-auto h-screen bg-[url('/image-bg.png')] bg-cover bg-no-repeat w-full max-h-full bg-[0px_0px]">
-      <div className="pt-32">
-        <MainIcon />
-      </div>
-
-      <h1 className="text-center items-center text-3xl font-bold text-white mt-10 mb-3">
-        Join Room
-      </h1>
-      <p className="text-center px-4 text-white pb-10">
-        это инновационная платформа совместной работы, созданная для
-        эффективного взаимодействия команд и упрощения удаленной коммуникации.
-      </p>
-      <Link href="/courses">
-        <button className="w-full text-[15px] flex items-center py-4 flex justify-center bg-white border rounded-full">
-          Менің курстарым
-        </button>
-      </Link>
-      <Link href="/courses/newcourse">
-        <button className="w-full text-[15px] flex items-center mt-4 py-4 flex justify-center bg-white border rounded-full">
-          Жаңа курсқа жазылу
-        </button>
-      </Link>
-
-      {/* Modal */}
+    <div className="mx-auto h-screen">
+      {/* Conditional Div for Modal Replacement */}
       {modalVisible && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl mb-4">Check User</h2>
-            <div className="mb-4">
-              <label className="block text-lg mb-2">Username</label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter username"
-                className="w-full p-2 border rounded-lg"
-              />
-            </div>
-            
-            {/* Display error message if username is invalid */}
-            {newUser.errors.username && (
-              <p className="text-red-500 text-sm mb-4">{newUser.errors.username}</p>
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50 h-full">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+            <h2 className="text-black text-lg mb-4">Пайдаланушының атын тексеру</h2>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                setErrorMessage(""); // Clear error message on input change
+              }}
+              placeholder="username-ді енгізіңіз"
+              className="w-full p-2 border border-gray-300 rounded-xl mb-4"
+            />
+            {errorMessage && (
+              <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
             )}
-
-            <div className="flex justify-center">
-              <button
-                onClick={handleCheckUser}
-                className="px-4 py-2 bg-green-500 text-white rounded-lg"
-                disabled={isPending || !isUsernameValid} // Disable button if pending or username is invalid
-              >
-                Check User
-              </button>
-            </div>
+            <Button
+              onPress={handleCheckUser}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl"
+              color={isUsernameValid ? "success" : "default"}
+              disabled={!isUsernameValid}
+            >
+              Тексеру
+            </Button>
           </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      {!modalVisible && (
+        <div className="mx-auto h-screen bg-[url('/image-bg.png')] bg-cover bg-no-repeat w-full max-h-full bg-[0px_0px]">
+          <div className="pt-32">
+            <MainIcon />
+          </div>
+
+          <h1 className="text-center items-center text-3xl font-bold text-white mt-10 mb-3">
+            Join Room
+          </h1>
+          <p className="text-center px-4 text-white pb-10">
+            Бұл командалардың тиімді әрекеттестігі мен қашықтан байланыс орнатуды жеңілдету үшін жасалған инновациялық бірлескен жұмыс платформасы.
+          </p>
+          <Link href="/courses" legacyBehavior>
+  <a className="w-full text-[15px] flex items-center py-4 flex justify-center bg-white border rounded-full">
+    Менің курстарым
+  </a>
+</Link>
+<Link href="/courses/newcourse" legacyBehavior>
+  <a className="w-full text-[15px] flex items-center mt-4 py-4 flex justify-center bg-white border rounded-full">
+    Жаңа курсқа жазылу
+  </a>
+</Link>
+
         </div>
       )}
     </div>

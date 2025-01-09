@@ -1,6 +1,6 @@
 import React from 'react';
 
-const MoreIcon = () => {
+export const MoreIcon = () => {
   return (
     <svg
       width="44"
@@ -36,4 +36,3 @@ const MoreIcon = () => {
   );
 };
 
-export default MoreIcon;

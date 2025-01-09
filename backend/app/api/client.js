@@ -213,15 +213,14 @@ router.post("/all", async (req, res) => {
     // Find all courses that the user has not subscribed to
     const courses = await prisma.course.findMany({
       where: {
-        NOT: {
-          myCourse: {
-            some: {
-              userId: user.id,  // Filter out courses already subscribed to by this user
-            },
+        myCourse: {
+          none: {
+            userId: user.id,
+            status: { in: ["ALLOWED", "PENDING"] }, // Exclude these statuses
           },
         },
       },
-    });
+    });    
 
     if (courses.length === 0) {
       return res.status(200).json({ message: "No available courses" });
@@ -240,7 +239,8 @@ router.post("/order", async (req, res) => {
   try {
     const userId = req.body.userId.toString();
     const courseId = parseInt(req.body.courseId, 10);
-    console.log("body", req.body)
+    console.log("body", req.body);
+
     if (!userId) {
       return res
         .status(400)
@@ -262,7 +262,7 @@ router.post("/order", async (req, res) => {
       return res.status(200).json({ message: "Course not found" });
     }
 
-    // Check if the course has already been ordered by the user
+    // Check if the course already exists in myCourse
     const existingCourse = await prisma.myCourse.findFirst({
       where: {
         userId: user.id,
@@ -271,10 +271,18 @@ router.post("/order", async (req, res) => {
     });
 
     if (existingCourse) {
-      return res.status(400).json({ error: "Course already ordered by this user." });
+      // Update the status to "PENDING" if it exists
+      const updatedCourse = await prisma.myCourse.update({
+        where: { id: existingCourse.id },
+        data: { status: "PENDING" },
+      });
+      return res.status(200).json({
+        message: "Course status updated to PENDING",
+        updatedCourse,
+      });
     }
 
-    // Allow subscription to own course (no additional check needed here)
+    // Create a new entry if not already in myCourse
     const mycourse = await prisma.myCourse.create({
       data: {
         courseId,
@@ -284,9 +292,9 @@ router.post("/order", async (req, res) => {
       },
     });
 
-    res.status(200).json({ mycourse });
+    res.status(200).json({ message: "Course successfully ordered", mycourse });
   } catch (error) {
-    console.error('Error occurred:', error.message);
+    console.error("Error occurred:", error.message);
     res.status(500).json({
       error: "Internal Server Error",
       message: error.message,
