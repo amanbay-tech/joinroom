@@ -175,7 +175,7 @@ router.post("/delete", async (req, res) => {
 
 router.post("/order", async (req, res) => {
   try {
-    const userId = req.body.userId.toString();
+    const userId = req.body?.userId?.toString();
 
     if (!userId) {
       return res
@@ -236,7 +236,6 @@ router.post("/order/manage", async (req, res) => {
     const courseId = parseInt(req.body.courseId, 10);
     const clientId = req.body.clientId;  // Treat clientId as string
     const { status } = req.body;
-    console.log(req.body);
 
     // Input validation
     if (!userId || !courseId || !clientId || !status) {

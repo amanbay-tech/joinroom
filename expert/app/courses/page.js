@@ -138,6 +138,12 @@ export default function Courses() {
           >
             Жаңа курс қосу
           </button>
+          <Link href="/courses/order" legacyBehavior>
+          <a
+          className="w-full text-[15px] rounded-xl flex items-center justify-center gap-2 border border-blue-500 px-4 py-3 mt-2 bg-white text-blue-500">
+            Сұраныстар
+            </a>
+            </Link>
         </div>
 
         {/* Modal */}
