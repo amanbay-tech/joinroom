@@ -22,6 +22,26 @@ async function createUser(userId) {
     throw new Error('Failed to create a user.');
   }
 }
+async function approve(userId, isApproved) {
+  try {
+    console.log("jwt:" + jwt);
+    const response = await axios.post(`${url}/user/approve`, {
+        userId: userId,
+        isApproved: isApproved
+    },
+    {
+        params: {
+          jwt: jwt, 
+        },
+      }
+    );
+
+    return response.data; // Return the response data directly
+  } catch (error) {
+    console.error('Error creating user:', error.message);
+    throw new Error('Failed to create a user.');
+  }
+}
 async function getExpertCourses(userId) {
   try {
     const response = await axios.post(
@@ -184,5 +204,6 @@ getMyCourses,
 subscribeCourse,
 getCourseLessons,
 getLesson,
-getMyCourse
+getMyCourse,
+approve
 };

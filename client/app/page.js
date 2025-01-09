@@ -12,6 +12,7 @@ export default function Home() {
   const [modalVisible, setModalVisible] = useState(true);
   const [username, setUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [messageSent, setMessageSent] = useState(false);
 
   // Check session storage for userId and username
   useEffect(() => {
@@ -63,19 +64,22 @@ export default function Home() {
 
   const handleCheckUser = async () => {
     try {
+      setMessageSent(false); // Reset messageSent state initially
       if (!username.trim()) {
         setErrorMessage("Өтінемін username-ді енгізіңіз");
         return;
       } else if (/[^A-Za-z0-9_]/.test(username)) {
         setErrorMessage("Username тек латын әріптері, сандар немесе _ символынан тұруы керек");
+        setMessageSent(false);
         return;
       } else if (username.length < 5 || username.length > 32) {
         setErrorMessage("Username ұзындығы 5 пен 32 символ арасында болуы керек");
         return;
       }
-
+      setMessageSent(true);
       const userResponse = await user({ username });
     } catch (error) {
+      setMessageSent(false);
       setErrorMessage(
         <>
           <a
@@ -113,13 +117,33 @@ export default function Home() {
               <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
             )}
             <Button
-              onPress={handleCheckUser}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl"
-              color={isUsernameValid ? "success" : "default"}
-              disabled={!isUsernameValid}
-            >
-              Тексеру
-            </Button>
+  onPress={handleCheckUser}
+  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl"
+  color={isUsernameValid ? "success" : "default"}
+  disabled={!isUsernameValid}
+>
+  Тексеру
+</Button>
+
+{messageSent && (
+  <div className="mt-4 text-center">
+    <p className="text-green-500 font-semibold">
+      Хабарлама жіберілді! Сіздің мақұлдауыңызды күтеміз. 🤗
+    </p>
+    <p className="text-gray-500">
+      Егер сізге хабарлама жетпесе, ботпен байланысыңыз:{" "}
+      <a
+        href="https://t.me/JoinRoomBot"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-500 underline"
+      >
+        JoinRoomBot
+      </a>
+    </p>
+  </div>
+)}
+
           </div>
         </div>
       )}

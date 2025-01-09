@@ -20,3 +20,21 @@ exports.sendMessage = async (chatId, message) => {
         console.error(`Error sending message to ${chatId}:`, error.message);
     }
 };
+exports.sendInteractiveMessage = async (chatId, message, buttons) => {
+    try {
+      await bot.telegram.sendMessage(chatId, message, {
+        reply_markup: {
+          inline_keyboard: buttons.map((button) => [
+            {
+              text: button.text,
+              callback_data: button.callback_data,
+            },
+          ]),
+        },
+      });
+      console.log(`Interactive message sent to ${chatId}: ${message}`);
+    } catch (error) {
+      console.error(`Error sending interactive message to ${chatId}:`, error.message);
+    }
+  };
+  

@@ -9,7 +9,8 @@ const {
   getMyCourse,
   subscribeCourse,
   getCourseLessons,
-  getLesson
+  getLesson,
+  approve
   
   
 } = require('./joinroom-client');
@@ -94,6 +95,39 @@ bot.action('list_courses', async (ctx) => {
     await ctx.reply('Курстарды алу кезінде қате пайда болды. Қайта көріңіз.');
   }
 });
+
+bot.on("callback_query", async (ctx) => {
+  const callbackData = ctx.callbackQuery.data;
+  const [action, userId] = callbackData.split("_");
+
+  if (action === "approve" || action === "reject") {
+    await ctx.answerCbQuery(`Session ${action}d!`);
+
+    const isApproved = action === "approve"; // Determine if approved or rejected
+
+    try {
+      // Send userId and approval status to the backend
+      const response = await approve(userId, isApproved);
+      console.log("Approval response:", response);
+
+      // Notify the user about the result
+      const replyMessage = isApproved
+        ? "Thank you for approving! 🎉 Your session has been activated."
+        : "You rejected the session. You can start again if needed.";
+      await ctx.reply(replyMessage);
+    } catch (error) {
+      console.error(`Error during ${action}:`, error.message);
+
+      // Notify the user if there was an error
+      await ctx.reply(
+        "An error occurred while processing your request. Please try again later."
+      );
+    }
+  }
+});
+
+
+
 
 
 bot.action(/my_course_(\d+)/, async (ctx) => {
