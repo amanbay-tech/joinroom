@@ -59,6 +59,9 @@ router.post("/get", async (req, res) => {
       where: {
         id: courseId,
       },
+      include: {
+        lesson: true, // Include related lessons
+      },
     });
 
     res.status(200).json({ course });
@@ -284,7 +287,7 @@ router.post("/order/manage", async (req, res) => {
       return res.status(401).json({ error: "User error", message: "User not found" });
     }
     const statusMessage = status === "ALLOWED" 
-      ? `Сіз "${mycourse.course.name}" курсына тіркелдіңіз қабылданды! ✅`
+      ? `Сұранысыңыз қабылданды. Сіз "${mycourse.course.name}" курсына тіркелдіңіз! ✅`
       : `Сіздің "${mycourse.course.name}" курсыңа жазылу өтінішіңіз қабылданбады ❌`;
 
     await sendMessage(client.userId, statusMessage);  // Send message to the client via Telegram bot

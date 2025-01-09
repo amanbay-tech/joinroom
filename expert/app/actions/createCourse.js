@@ -1,6 +1,6 @@
 "use server";
 
-import ServerRequest from "@/api/ServerRequest";
+import ServerRequest from "@/actions/api/ServerRequest";
 import { revalidatePath } from "next/cache";
 
 export async function createCourse(data) {

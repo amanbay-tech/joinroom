@@ -12,6 +12,7 @@ export default function NewCourses() {
   const [selectedCourse, setSelectedCourse] = useState(null); // Track the selected course
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false); // Confirmation visibility state
   const [isModalVisible, setIsModalVisible] = useState(false); // Confirmation visibility state
+  const [subscribedCourse, setSubscribedCourse] = useState(null); // NEW: Store subscribed course details
 
   // Fetch userId from sessionStorage or localStorage
   useEffect(() => {
@@ -53,8 +54,7 @@ export default function NewCourses() {
         courseId: selectedCourse.id,
         userId: userId,
       });
-  
-      console.log(`User ${userId} subscribed to course ${selectedCourse.id}`);
+      setSubscribedCourse(selectedCourse);
       toast.success("Курсқа сәтті жазылдыңыз!");
     } catch (error) {
       console.error("Subscription failed:", error);
@@ -196,7 +196,7 @@ export default function NewCourses() {
     <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
       <h2 className="font-bold text-xl mb-4">Рахмет!</h2>
       <p className="text-gray-700 mb-6">
-        <span className="font-bold">{selectedCourse?.name}</span> курсына жазылуға сұраныс жіберілді. Сұранысыңыз қабылданғанда{" "}
+        <span className="font-bold">{subscribedCourse?.name}</span> курсына жазылуға сұраныс жіберілді. Сұранысыңыз қабылданғанда{" "}
         <a
           href="https://t.me/JoinRoomBot"
           target="_blank"
