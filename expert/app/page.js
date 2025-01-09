@@ -174,7 +174,7 @@ export default function Home() {
     Менің курстарым
   </a>
 </Link>
-<Link href="/courses/newcourse" legacyBehavior>
+<Link href="/courses?showModal=true" legacyBehavior>
   <a className="w-full text-[15px] flex items-center mt-4 py-4 flex justify-center bg-white border rounded-full">
     Жаңа курс қосу
   </a>

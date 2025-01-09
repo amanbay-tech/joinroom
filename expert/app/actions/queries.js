@@ -14,6 +14,10 @@ import {
 
     
     couseLesson: async (courseData) => await createData("api", "expert/lesson/get", courseData),
+    addLesson: async (courseData) => await createData("api", "expert/lesson/create", courseData),
+    createCourse: async (courseData) => await createData("api", "expert/course/create", courseData),
+
+
     orders: async (userId) => await createData("api", "expert/course/order", userId),
   };
   
