@@ -16,17 +16,26 @@ export default function Home() {
 
   // Check session storage for userId and username
   useEffect(() => {
+    const telegram = window.Telegram?.WebApp;
     const storedUserId = sessionStorage.getItem("userId");
     const storedLocalUserId = localStorage.getItem("userId");
-
-    if (storedUserId || storedLocalUserId) {
-      // If both exist, don't show modal
+    const telegramUserId = telegram?.initDataUnsafe?.user?.id;
+  
+    if (storedUserId || storedLocalUserId || telegramUserId) {
+      // If userId exists in sessionStorage, localStorage, or Telegram, hide modal
       setModalVisible(false);
+  
+      // Optionally save Telegram userId if available and not already stored
+      if (!storedUserId && telegramUserId) {
+        sessionStorage.setItem("userId", telegramUserId);
+        localStorage.setItem("userId", telegramUserId);
+      }
     } else {
-      // If not, show modal
+      // If userId is not found, show modal
       setModalVisible(true);
     }
   }, []);
+  
 
 
   const { mutateAsync: user } = useCustomMutation("user", {
