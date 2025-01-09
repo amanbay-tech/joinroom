@@ -81,12 +81,11 @@ router.post("/start", async (req, res) => {
 
     // Store the pending approval
     pendingApprovals[user.userId] = { approved: false };
-    console.log(`Pending approval for userId: ${user.userId}`);
 
     // Send the interactive message
     await sendInteractiveMessage(
       user.userId,
-      "Сіздің аккаунтыңызға кіру жүзеге асырылуда, бұл сіз бе",
+      "Сіздің аккаунтыңызға кіру жүзеге асырылуда, бұл сіз бе?",
       [
         { text: "Иә, менмін ✅", callback_data: `approve_${user.userId}` },
         { text: "Жоқ, мен емес ❌", callback_data: `reject_${user.userId}` },
@@ -101,7 +100,6 @@ router.post("/start", async (req, res) => {
         res.status(200).json({ message: "User approved the session", user });
       }
     }, 1000);
-
     // Timeout to prevent indefinite waiting
     setTimeout(() => {
       clearInterval(interval);
@@ -135,10 +133,8 @@ router.post("/approve", async (req, res) => {
     pendingApprovals[userId].approved = isApproved;
 
     if (isApproved) {
-      console.log(`User ${userId} approved the session.`);
       res.status(200).send("Approval status updated to approved.");
     } else {
-      console.log(`User ${userId} rejected the session.`);
       delete pendingApprovals[userId]; // Clean up on rejection
       res.status(200).send("Approval status updated to rejected.");
     }

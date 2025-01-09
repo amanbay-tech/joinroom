@@ -18,9 +18,6 @@ export default function Home() {
   useEffect(() => {
     const storedUserId = sessionStorage.getItem("userId");
     const storedLocalUserId = localStorage.getItem("userId");
-    console.log("storedUserId", storedUserId)
-    console.log("storedLocalUserId", storedLocalUserId)
-
 
     if (storedUserId || storedLocalUserId) {
       // If both exist, don't show modal
@@ -35,9 +32,9 @@ export default function Home() {
   const { mutateAsync: user } = useCustomMutation("user", {
     onSuccess: async (response) => {
       toast.success("Cәтті!");
-      sessionStorage.setItem("userId", response.userId); // Save userId in session
+      sessionStorage.setItem("userId", response.user.userId); // Save userId in session
       sessionStorage.setItem("username", username); // Save username in session
-      localStorage.setItem("userId", response.userId);
+      localStorage.setItem("userId", response.user.userId);
       localStorage.setItem("username", username);
 
       setModalVisible(false); // Close modal on success
@@ -66,13 +63,15 @@ export default function Home() {
     try {
       setMessageSent(false); // Reset messageSent state initially
       if (!username.trim()) {
+        setMessageSent(false);
         setErrorMessage("Өтінемін username-ді енгізіңіз");
         return;
       } else if (/[^A-Za-z0-9_]/.test(username)) {
-        setErrorMessage("Username тек латын әріптері, сандар немесе _ символынан тұруы керек");
         setMessageSent(false);
+        setErrorMessage("Username тек латын әріптері, сандар немесе _ символынан тұруы керек");
         return;
       } else if (username.length < 5 || username.length > 32) {
+        setMessageSent(false);
         setErrorMessage("Username ұзындығы 5 пен 32 символ арасында болуы керек");
         return;
       }

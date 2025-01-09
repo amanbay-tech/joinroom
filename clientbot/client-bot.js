@@ -112,8 +112,8 @@ bot.on("callback_query", async (ctx) => {
 
       // Notify the user about the result
       const replyMessage = isApproved
-        ? "Thank you for approving! 🎉 Your session has been activated."
-        : "You rejected the session. You can start again if needed.";
+        ? "Рақмет🎉, cіздің аккаунтыңыз қазір белсенді."
+        : "Сіз сұранысты қабылдамадыңыз. Қажет болса, қайта бастауға болады.";
       await ctx.reply(replyMessage);
     } catch (error) {
       console.error(`Error during ${action}:`, error.message);
